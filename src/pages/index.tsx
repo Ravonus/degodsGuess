@@ -610,6 +610,14 @@ export default function Home() {
               @R4vonus
             </a>
           </div>
+          <div className="-mt-12 text-gray-300/30">
+            Donations {" "}
+            <a
+
+            >
+              ravonus.eth
+            </a>
+          </div>
         </div>
       </main>
     </>
