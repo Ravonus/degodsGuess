@@ -196,7 +196,10 @@ export default function Home() {
   // }
 
   useEffect(() => {
-    if (currentRound === 0) return;
+    if (currentRound === 0) {
+   //   setLastAnswers([]);
+      return;
+    }
     setShouldStartCountdown(true);
     const godOne = randomDeGod();
     const godTwo = randomDeGod();
@@ -478,20 +481,20 @@ export default function Home() {
           )}
           {(gameStatus === "notStarted" || gameStatus === "finished") && (
             <>
-              <div className="mx-auto grid grid-cols-1 justify-items-center gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-                {lastAnswers.map((nft) => (
-                  <button
-                    key={nft.name}
-                    className="m-2 rounded bg-gray-600 px-4 py-1 py-2 font-bold text-white shadow-xl transition duration-500 hover:scale-110 hover:bg-gray-700"
+              <div className="mx-auto grid grid-cols-2 justify-items-center gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                {lastAnswers.map((nft, i) => (
+                  <img
+                    src={nft?.image}
+                    alt="NFT"
+                    key={`${i}-${nft.name}`}
+                    className="m-2 rounded font-bold text-white shadow-xl transition duration-500 hover:scale-110 h-36 border-black border-2"
                     onClick={() => {
                       window.open(
                         `https://twitter.com/${nft.username}`,
                         "_blank"
                       );
                     }}
-                  >
-                    {nft.name}
-                  </button>
+                  />
                 ))}
               </div>
             </>
@@ -502,6 +505,7 @@ export default function Home() {
               <button
                 className="rounded bg-gray-600 px-4 py-2 font-bold text-white shadow-xl transition duration-500 hover:scale-110 hover:bg-gray-700"
                 onClick={() => {
+                  setLastAnswers([]);
                   setGameStatus("inProgress");
                   setCurrentRound(0);
                   setAnswers({ correct: 0, incorrect: 0 });
