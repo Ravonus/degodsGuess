@@ -56,6 +56,8 @@ export default function Home() {
 
   const [lastIncorrect, setLastIncorrect] = useState("");
 
+  const [lastAnswers, setLastAnswers] = useState<Data[]>([]);
+
   const [azukiWidth, setAzukiWidth] = useState(100);
   const [elementalWidth, setElementalWidth] = useState(100);
 
@@ -287,6 +289,8 @@ export default function Home() {
       }
     }
 
+    setLastAnswers((prev) => [...prev, nftData]);
+
     setRoundInProgress(false);
     await new Promise((resolve) => setTimeout(resolve, 500)); // Wait 0.5 seconds before requesting a new NFT
     requestNFT();
@@ -472,6 +476,27 @@ export default function Home() {
               Share on Twitter
             </button>
           )}
+          {(gameStatus === "notStarted" || gameStatus === "finished") && (
+            <>
+              <div className="mx-auto grid grid-cols-1 justify-items-center gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                {lastAnswers.map((nft) => (
+                  <button
+                    key={nft.name}
+                    className="m-2 rounded bg-gray-600 px-4 py-1 py-2 font-bold text-white shadow-xl transition duration-500 hover:scale-110 hover:bg-gray-700"
+                    onClick={() => {
+                      window.open(
+                        `https://twitter.com/${nft.username}`,
+                        "_blank"
+                      );
+                    }}
+                  >
+                    {nft.name}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+
           {gameStatus === "notStarted" && (
             <>
               <button
