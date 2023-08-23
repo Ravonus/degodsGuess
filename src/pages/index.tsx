@@ -284,13 +284,13 @@ export default function Home() {
     // }
 
     if (username === nftData.name) {
-      toast.success("Correct!", {
+      toast.success(`Correct - ${nftData.name}`, {
         autoClose: 500,
       });
 
       setAnswers((prev) => ({ ...prev, correct: prev.correct + 1 }));
     } else {
-      toast.error("Nope!", {
+      toast.error(nftData.name, {
         autoClose: 500,
       });
       setAnswers((prev) => ({ ...prev, incorrect: prev.incorrect + 1 }));
@@ -655,7 +655,7 @@ export default function Home() {
                         handleGuess(nft.name).catch(console.error);
                       }}
                     >
-                      {nft.username}
+                      {nft.name}
                     </button>
                   ))}
                 </>
