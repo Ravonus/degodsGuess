@@ -196,44 +196,47 @@ export default function Home() {
   // }
 
   useEffect(() => {
-
-    const count = 500;
-
     if (currentRound === 0) {
-   //   setLastAnswers([]);
+      //   setLastAnswers([]);
       return;
     }
-    setShouldStartCountdown(true);
-    const godOne = randomDeGod();
-    const godTwo = randomDeGod();
-    const godThree = randomDeGod();
-    const godFour = randomDeGod();
+    (async () => {
+      setShouldStartCountdown(true);
 
-    let randomGods: Data[] = [];
-    switch (defaultCount) {
-      case 3:
+      // Get random gods for multiple choice without checking previous answers
+      const godOne = await randomDeGod(true);
+      const godTwo = await randomDeGod(true);
+      const godThree = await randomDeGod(true);
+      const godFour = await randomDeGod(true);
 
-        randomGods = [godOne, godTwo, godThree, godFour];
-        break;
+      let randomGods: Data[] = [];
+      switch (defaultCount) {
+        case 3:
+          randomGods = [godOne, godTwo, godThree, godFour];
+          break;
+        case 5:
+          randomGods = [godOne, godTwo, godThree];
+          break;
+        default:
+          randomGods = [godOne, godTwo];
+          break;
+      }
 
-      case 5:
+      setMultipleChoice(randomGods);
 
-        randomGods = [godOne, godTwo, godThree];
-        break;
+      // Get a distinct right answer, ensuring it's not already present in multiple choice
+      let selectedGod: Data;
+      do {
+        selectedGod = await randomDeGod();
+      } while (randomGods.some((god) => god.name === selectedGod.name));
 
-      default:
+      // Shuffle randomGods and replace one random element with the right answer
+      const selectedIndex = Math.floor(Math.random() * randomGods.length);
+      randomGods[selectedIndex] = selectedGod;
 
-        randomGods = [godOne, godTwo];
-        break;
-    }
-
-    setMultipleChoice(randomGods);
-
-    setNftData(
-      randomGods[
-        Math.floor(Math.random() * randomGods.length)
-      ] as unknown as Data
-    );
+      setMultipleChoice(randomGods); // Update the multiple choice with shuffled options
+      setNftData(selectedGod); // Set the correct answer
+    })().catch(console.error);
   }, [currentRound]);
 
   useEffect(() => {
@@ -303,33 +306,44 @@ export default function Home() {
       }
     }
 
-  
-
     setRoundInProgress(false);
     await new Promise((resolve) => setTimeout(resolve, 500)); // Wait 0.5 seconds before requesting a new NFT
     requestNFT();
   };
 
-  function randomDeGod() {
+  async function randomDeGod(noCheck = false): Promise<Data> {
     let count: number | undefined;
 
     switch (defaultCount) {
       case 3:
-        count = undefined
+        count = undefined;
         break;
       case 5:
-        count = 250;
+        count = 150;
         break;
       default:
-        count = 50;
+        count = 75;
         break;
     }
 
     const num = count !== undefined ? Number(count) : data.length;
-    const god = data[Math.floor(Math.random() * num)] as unknown as Data;
-    if (lastAnswers.includes(god)) return randomDeGod();
-    else
-      return god;
+
+    let god: Data;
+    if (!noCheck) {
+      let foundGod: boolean;
+      do {
+        god = data[Math.floor(Math.random() * num)] as unknown as Data;
+        foundGod = lastAnswers.some((answer) => answer.name === god.name);
+
+        if (foundGod) {
+          await new Promise((resolve) => setTimeout(resolve, 0)); // wait for next event loop
+        }
+      } while (foundGod);
+    } else {
+      god = data[Math.floor(Math.random() * num)] as unknown as Data;
+    }
+
+    return god;
   }
 
   function requestNFT() {
@@ -516,7 +530,7 @@ export default function Home() {
                     src={nft?.image}
                     alt="NFT"
                     key={`${i}-${nft.name}`}
-                    className="m-2 h-36 rounded border-2 border-black font-bold text-white shadow-xl transition duration-500 hover:scale-110 cursor-pointer"
+                    className="m-2 h-36 cursor-pointer rounded border-2 border-black font-bold text-white shadow-xl transition duration-500 hover:scale-110"
                     onClick={() => {
                       window.open(
                         `https://twitter.com/${nft.username}`,
@@ -629,14 +643,14 @@ export default function Home() {
               </select>
             )}
 
-          <div className='flex justify-center item-justify-center item-center'>
+          <div className="item-justify-center item-center flex justify-center">
             <div className="mx-auto px-12">
               {gameStatus === "inProgress" && (
                 <>
                   {multipleChoice.map((nft) => (
                     <button
                       key={nft.name}
-                      className="rounded bg-gray-600  font-bold text-white shadow-xl transition duration-500 hover:scale-110 hover:bg-gray-700 p-1 mx-3 my-1 text-center"
+                      className="mx-3 my-1  rounded bg-gray-600 p-1 text-center font-bold text-white shadow-xl transition duration-500 hover:scale-110 hover:bg-gray-700"
                       onClick={() => {
                         handleGuess(nft.name).catch(console.error);
                       }}
