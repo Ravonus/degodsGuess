@@ -196,6 +196,9 @@ export default function Home() {
   // }
 
   useEffect(() => {
+
+    const count = 500;
+
     if (currentRound === 0) {
    //   setLastAnswers([]);
       return;
@@ -209,14 +212,17 @@ export default function Home() {
     let randomGods: Data[] = [];
     switch (defaultCount) {
       case 3:
+
         randomGods = [godOne, godTwo, godThree, godFour];
         break;
 
       case 5:
+
         randomGods = [godOne, godTwo, godThree];
         break;
 
       default:
+
         randomGods = [godOne, godTwo];
         break;
     }
@@ -305,7 +311,23 @@ export default function Home() {
   };
 
   function randomDeGod() {
-    return data[Math.floor(Math.random() * data.length)] as unknown as Data;
+    let count: number | undefined;
+
+    switch (defaultCount) {
+      case 3:
+        count = undefined
+        break;
+      case 5:
+        count = 500;
+        break;
+      default:
+        count = 50;
+        break;
+    }
+
+    const num = count !== undefined ? Number(count) : data.length;
+
+    return data[Math.floor(Math.random() *num )] as unknown as Data;
   }
 
   function requestNFT() {
