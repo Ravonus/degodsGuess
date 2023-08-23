@@ -326,8 +326,10 @@ export default function Home() {
     }
 
     const num = count !== undefined ? Number(count) : data.length;
-
-    return data[Math.floor(Math.random() *num )] as unknown as Data;
+    const god = data[Math.floor(Math.random() * num)] as unknown as Data;
+    if (lastAnswers.includes(god)) return randomDeGod();
+    else
+      return god;
   }
 
   function requestNFT() {
