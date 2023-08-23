@@ -9,7 +9,6 @@ import { ToastContainer, toast } from "react-toastify";
 
 import "react-toastify/dist/ReactToastify.css";
 
-
 import data from "~/../public/data.json";
 
 //their name needs to be the record to the object
@@ -61,7 +60,6 @@ export default function Home() {
   const [elementalWidth, setElementalWidth] = useState(100);
 
   // const [socket, setSocket] = useState<Socket>();
-
 
   const router = useRouter();
 
@@ -152,12 +150,9 @@ export default function Home() {
 
     if (gameMode === gameModes.STREAK && !twitch) return;
 
-
-
     let countdownTimer: NodeJS.Timeout;
 
     if (countdown > 0 && shouldStartCountdown) {
-      
       countdownTimer = setTimeout(() => {
         setCountdown((prevCountdown) => prevCountdown - 1);
       }, 1000);
@@ -165,7 +160,7 @@ export default function Home() {
       // Timeout expired, request a new NFT
 
       setAnswers((prev) => ({ ...prev, incorrect: prev.incorrect + 1 }));
-      
+
       requestNFT();
       setShouldStartCountdown(false); // Prevent the countdown from starting automatically
     }
@@ -199,7 +194,6 @@ export default function Home() {
   // }
 
   useEffect(() => {
-
     if (currentRound === 0) return;
     setShouldStartCountdown(true);
     const godOne = randomDeGod();
@@ -207,10 +201,28 @@ export default function Home() {
     const godThree = randomDeGod();
     const godFour = randomDeGod();
 
-    const randomGods = [godOne, godTwo, godThree, godFour];
+    let randomGods: Data[] = [];
+    switch (defaultCount) {
+      case 3:
+        randomGods = [godOne, godTwo, godThree, godFour];
+        break;
+
+      case 5:
+        randomGods = [godOne, godTwo, godThree];
+        break;
+
+      default:
+        randomGods = [godOne, godTwo];
+        break;
+    }
+
     setMultipleChoice(randomGods);
 
-    setNftData(randomGods[Math.floor(Math.random() * randomGods.length)] as unknown as Data);
+    setNftData(
+      randomGods[
+        Math.floor(Math.random() * randomGods.length)
+      ] as unknown as Data
+    );
   }, [currentRound]);
 
   useEffect(() => {
@@ -219,7 +231,6 @@ export default function Home() {
   }, [restart]);
 
   const handleGuess = async (username: string) => {
-  
     if (currentRound > 10 && gameMode === gameModes.TIMER) {
       setGameStatus("finished");
       setCountdown(0);
@@ -253,12 +264,11 @@ export default function Home() {
     //   }
     // }
 
-
     if (username === nftData.name) {
       toast.success("Correct!", {
         autoClose: 500,
       });
-      
+
       setAnswers((prev) => ({ ...prev, correct: prev.correct + 1 }));
     } else {
       toast.error("Nope!", {
@@ -277,7 +287,6 @@ export default function Home() {
       }
     }
 
-
     setRoundInProgress(false);
     await new Promise((resolve) => setTimeout(resolve, 500)); // Wait 0.5 seconds before requesting a new NFT
     requestNFT();
@@ -288,8 +297,7 @@ export default function Home() {
   }
 
   function requestNFT() {
-    
-      setCountdown(defaultCount);
+    setCountdown(defaultCount);
     if (gameStatus !== "inProgress") return;
 
     setShouldStartCountdown(false);
@@ -297,9 +305,7 @@ export default function Home() {
       (currentRound < 10 && gameMode === gameModes.TIMER) ||
       gameMode === gameModes.STREAK
     ) {
-
-      setCurrentRound((prevRound) => prevRound + 1); 
-      
+      setCurrentRound((prevRound) => prevRound + 1);
     } else if (gameMode === gameModes.TIMER) {
       setGameStatus("finished");
       setCountdown(0);
@@ -324,8 +330,6 @@ export default function Home() {
     const appLink = "https://decypher.world";
 
     const createdBy = "@R4vonus";
-
-
 
     const diff =
       defaultCount == 6 ? "Easy" : defaultCount > 3 ? "Medium" : "Hard";
@@ -561,7 +565,7 @@ export default function Home() {
                   <option defaultChecked value="5" selected>
                     Medium
                   </option>
-                  <option value="1">Hard</option>
+                  <option value="3">Hard</option>
                 </>
               </select>
             )}
@@ -611,12 +615,7 @@ export default function Home() {
             </a>
           </div>
           <div className="-mt-12 text-gray-300/30">
-            Donations {" "}
-            <a
-
-            >
-              ravonus.eth
-            </a>
+            Donations <a>ravonus.eth</a>
           </div>
         </div>
       </main>
