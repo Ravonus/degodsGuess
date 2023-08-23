@@ -350,10 +350,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
         <title>DeGods</title>
         <meta name="title" content="DeGods" />
-        <meta
-          name="description"
-          content="Can you guess the community."
-        />
+        <meta name="description" content="Can you guess the community." />
 
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://pfpguessr.com/" />
@@ -386,7 +383,7 @@ export default function Home() {
         <meta name="twitter:image" content="https://pfpguessr.com/pfp.png" />
       </Head>
 
-      <main className=" flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e021d] to-[#15162c]">
+      <main className=" flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0009]  to-[#000]">
         <ToastContainer />
         <div className="container flex flex-col items-center justify-center gap-12 px-4 py-2 md:-mt-32">
           <div className="mt-5 flex flex-col items-center justify-center gap-4">
@@ -445,16 +442,18 @@ export default function Home() {
             </div>
           </div>
           {!nftData?.image ? (
-            <img
-              alt="NFT"
-              src="/aore.png"
-              className="rounded border-2 border-purple-500 shadow-xl transition duration-500 hover:scale-110 hover:border-purple-600"
-            />
+            <>
+              {/* <img
+                alt="NFT"
+                src="/aore.png"
+                className="rounded border-2 border-gray-500 shadow-xl transition duration-500 hover:scale-110 hover:border-gray-600"
+              /> */}
+            </>
           ) : (
             <img
               alt="NFT"
               src={nftData?.image}
-              className="rounded border-2 border-purple-500 shadow-xl transition duration-500 hover:scale-110 hover:border-purple-600"
+              className="rounded border-2 border-gray-500 shadow-xl transition duration-500 hover:scale-110 hover:border-gray-600"
             />
           )}
           {gameStatus === "finished" && (
@@ -468,7 +467,7 @@ export default function Home() {
           {gameStatus === "notStarted" && (
             <>
               <button
-                className="rounded bg-purple-600 px-4 py-2 font-bold text-white shadow-xl transition duration-500 hover:scale-110 hover:bg-purple-700"
+                className="rounded bg-gray-600 px-4 py-2 font-bold text-white shadow-xl transition duration-500 hover:scale-110 hover:bg-gray-700"
                 onClick={() => {
                   setGameStatus("inProgress");
                   setCurrentRound(0);
@@ -505,7 +504,7 @@ export default function Home() {
 
           {gameStatus === "finished" && (
             <button
-              className="-mt-4 rounded bg-purple-600 px-4 py-2 font-bold text-white shadow-xl transition duration-500 hover:scale-110 hover:bg-purple-700"
+              className="-mt-4 rounded bg-gray-600 px-4 py-2 font-bold text-white shadow-xl transition duration-500 hover:scale-110 hover:bg-gray-700"
               onClick={() => {
                 setGameStatus("inProgress");
                 setCurrentRound(0);
@@ -538,7 +537,7 @@ export default function Home() {
 
           {(gameStatus === "notStarted" || gameStatus === "finished") && (
             <select
-              className="-mt-8 rounded bg-purple-600 px-4 py-2 font-bold text-white shadow-xl transition duration-500 hover:scale-110 hover:bg-purple-700"
+              className="-mt-8 rounded bg-gray-600 px-4 py-2 font-bold text-white shadow-xl transition duration-500 hover:scale-110 hover:bg-gray-700"
               onChange={(e) => setGameMode(e.target.value)}
             >
               <option value={gameModes.TIMER}>Timer Mode</option>
@@ -550,7 +549,7 @@ export default function Home() {
             gameMode !== "STREAK" &&
             !twitch && (
               <select
-                className="-mt-8 rounded bg-purple-600 px-4 py-2 font-bold text-white shadow-xl transition duration-500 hover:scale-110 hover:bg-purple-700"
+                className="-mt-8 rounded bg-gray-600 px-4 py-2 font-bold text-white shadow-xl transition duration-500 hover:scale-110 hover:bg-gray-700"
                 onChange={(e) => setDifficulty(parseInt(e.target.value))}
               >
                 <>
@@ -568,12 +567,14 @@ export default function Home() {
               <>
                 {multipleChoice.map((nft) => (
                   <button
-                      key={nft.username}
-                      className="rounded bg-purple-600 px-4 py-2 font-bold text-white shadow-xl transition duration-500 hover:scale-110 hover:bg-purple-700"
-                    onClick={() => { handleGuess(nft.username).catch(console.error) }}
-                    >
-                      {nft.username}
-                    </button>
+                    key={nft.username}
+                    className="rounded bg-gray-600 px-4 py-2 font-bold text-white shadow-xl transition duration-500 hover:scale-110 hover:bg-gray-700"
+                    onClick={() => {
+                      handleGuess(nft.username).catch(console.error);
+                    }}
+                  >
+                    {nft.username}
+                  </button>
                 ))}
               </>
             )}
