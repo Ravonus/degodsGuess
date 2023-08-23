@@ -629,14 +629,14 @@ export default function Home() {
               </select>
             )}
 
-          <div className='flex justify-center'>
+          <div className='flex justify-center item-justify-center item-center'>
             <div className="mx-auto px-12">
               {gameStatus === "inProgress" && (
                 <>
                   {multipleChoice.map((nft) => (
                     <button
                       key={nft.name}
-                      className="rounded bg-gray-600  font-bold text-white shadow-xl transition duration-500 hover:scale-110 hover:bg-gray-700 p-2 mx-4 my-2"
+                      className="rounded bg-gray-600  font-bold text-white shadow-xl transition duration-500 hover:scale-110 hover:bg-gray-700 p-1 mx-3 my-1 text-center"
                       onClick={() => {
                         handleGuess(nft.name).catch(console.error);
                       }}
