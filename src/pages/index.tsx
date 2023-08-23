@@ -29,6 +29,7 @@ interface Data {
   username: string;
   rank: number;
   tokenID: number;
+  name: string;
 }
 
 export default function Home() {
@@ -253,7 +254,7 @@ export default function Home() {
     // }
 
 
-    if (username === nftData.username) {
+    if (username === nftData.name) {
       toast.success("Correct!", {
         autoClose: 500,
       });
@@ -567,10 +568,10 @@ export default function Home() {
               <>
                 {multipleChoice.map((nft) => (
                   <button
-                    key={nft.username}
+                    key={nft.name}
                     className="rounded bg-gray-600 px-4 py-2 font-bold text-white shadow-xl transition duration-500 hover:scale-110 hover:bg-gray-700"
                     onClick={() => {
-                      handleGuess(nft.username).catch(console.error);
+                      handleGuess(nft.name).catch(console.error);
                     }}
                   >
                     {nft.username}
