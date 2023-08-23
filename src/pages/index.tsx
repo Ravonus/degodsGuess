@@ -363,7 +363,7 @@ export default function Home() {
           property="og:description"
           content="Can you guess the community members."
         />
-        <meta property="og:image" content="https://pfpguessr.com/pfp.png" />
+        <meta property="og:image" content="https://decypher.world/pfp.png" />
 
         <meta property="twitter:card" content="summary_large_image" />
         <meta property="twitter:url" content="https://decypher.world/" />
@@ -374,7 +374,7 @@ export default function Home() {
         />
         <meta
           property="twitter:image"
-          content="https://pfpguessr.com/pfp.png"
+          content="https://decypher.world/pfp.png"
         />
 
         <meta name="twitter:card" content="summary_large_image" />
@@ -384,7 +384,7 @@ export default function Home() {
           name="twitter:description"
           content="Can you guess the community members."
         />
-        <meta name="twitter:image" content="https://pfpguessr.com/pfp.png" />
+        <meta name="twitter:image" content="https://decypher.world/pfp.png" />
       </Head>
 
       <main className=" flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0009]  to-[#000]">
