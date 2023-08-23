@@ -235,6 +235,11 @@ export default function Home() {
     setRestart(false);
   }, [restart]);
 
+  useEffect(() => {
+    if (!nftData) return;
+    setLastAnswers((prev) => [...prev, nftData]);
+  }, [nftData]);
+
   const handleGuess = async (username: string) => {
     if (currentRound > 10 && gameMode === gameModes.TIMER) {
       setGameStatus("finished");
@@ -292,7 +297,7 @@ export default function Home() {
       }
     }
 
-    setLastAnswers((prev) => [...prev, nftData]);
+  
 
     setRoundInProgress(false);
     await new Promise((resolve) => setTimeout(resolve, 500)); // Wait 0.5 seconds before requesting a new NFT
