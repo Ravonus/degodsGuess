@@ -447,11 +447,11 @@ export default function Home() {
           </div>
           {!nftData?.image ? (
             <>
-              {/* <img
+              <img
                 alt="NFT"
                 src="/aore.png"
                 className="rounded border-2 border-gray-500 shadow-xl transition duration-500 hover:scale-110 hover:border-gray-600"
-              /> */}
+              />
             </>
           ) : (
             <img
