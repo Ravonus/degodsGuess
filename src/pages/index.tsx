@@ -321,25 +321,25 @@ export default function Home() {
     const correct = `${answers.correct}`;
     const incorrect = `${answers.incorrect}`;
 
-    const appLink = "https://pfpguessr.com";
+    const appLink = "https://decypher.world";
 
     const createdBy = "@R4vonus";
 
-    const hashtag = "#AzukiVsElemental";
+
 
     const diff =
       defaultCount == 6 ? "Easy" : defaultCount > 3 ? "Medium" : "Hard";
     let scoreText = "";
 
     if (gameMode === gameModes.STREAK) {
-      scoreText = `I scored a streak of ${correct} in Azuki VS Elemental ${appLink}`;
+      scoreText = `I scored a streak of ${correct} in DeCypher ${appLink}`;
     }
     if (gameMode === gameModes.TIMER) {
-      scoreText = `I scored ${correct}/10 in Azuki VS Elemental ${appLink} on ${diff} difficulty!`;
+      scoreText = `I scored ${correct}/10 in Decypher ${appLink} on ${diff} difficulty!`;
     }
 
     const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-      scoreText + `\n\n Created by ${createdBy}\n ${hashtag}`
+      scoreText + `\n\n Created by ${createdBy}\n`
     )}`;
 
     window.open(tweetUrl);
@@ -349,25 +349,28 @@ export default function Home() {
     <>
       <Head>
         <link rel="icon" href="/favicon.ico" />
-        <title>DeGods</title>
+        <title>DeCypher</title>
         <meta name="title" content="DeGods" />
-        <meta name="description" content="Can you guess the community." />
+        <meta
+          name="description"
+          content="Can you guess the community members."
+        />
 
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://pfpguessr.com/" />
-        <meta property="og:title" content="DeGods" />
+        <meta property="og:url" content="https://decypher.world" />
+        <meta property="og:title" content="DeCypher" />
         <meta
           property="og:description"
-          content="Can you guess the community."
+          content="Can you guess the community members."
         />
         <meta property="og:image" content="https://pfpguessr.com/pfp.png" />
 
         <meta property="twitter:card" content="summary_large_image" />
-        <meta property="twitter:url" content="https://pfpguessr.com/" />
+        <meta property="twitter:url" content="https://decypher.world/" />
         <meta property="twitter:title" content="DeGods" />
         <meta
           property="twitter:description"
-          content="Can you guess the community."
+          content="Can you guess the community members."
         />
         <meta
           property="twitter:image"
@@ -375,11 +378,11 @@ export default function Home() {
         />
 
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:url" content="https://pfpguessr.com/" />
-        <meta name="twitter:title" content="DeGods" />
+        <meta name="twitter:url" content="https://decypher.world/" />
+        <meta name="twitter:title" content="DeCypher" />
         <meta
           name="twitter:description"
-          content="Can you guess the community."
+          content="Can you guess the community members."
         />
         <meta name="twitter:image" content="https://pfpguessr.com/pfp.png" />
       </Head>
