@@ -348,28 +348,28 @@ export default function Home() {
     <>
       <Head>
         <link rel="icon" href="/favicon.ico" />
-        <title>PFPGuessr</title>
-        <meta name="title" content="PFPGuessr" />
+        <title>DeGods</title>
+        <meta name="title" content="DeGods" />
         <meta
           name="description"
-          content="A quick game to test your NFT guessing skills."
+          content="Can you guess the community."
         />
 
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://pfpguessr.com/" />
-        <meta property="og:title" content="PFPGuessr" />
+        <meta property="og:title" content="DeGods" />
         <meta
           property="og:description"
-          content="A quick game to test your NFT guessing skills."
+          content="Can you guess the community."
         />
         <meta property="og:image" content="https://pfpguessr.com/pfp.png" />
 
         <meta property="twitter:card" content="summary_large_image" />
         <meta property="twitter:url" content="https://pfpguessr.com/" />
-        <meta property="twitter:title" content="PFPGuessr" />
+        <meta property="twitter:title" content="DeGods" />
         <meta
           property="twitter:description"
-          content="A quick game to test your NFT guessing skills."
+          content="Can you guess the community."
         />
         <meta
           property="twitter:image"
@@ -378,10 +378,10 @@ export default function Home() {
 
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:url" content="https://pfpguessr.com/" />
-        <meta name="twitter:title" content="PFPGuessr" />
+        <meta name="twitter:title" content="DeGods" />
         <meta
           name="twitter:description"
-          content="A quick game to test your NFT guessing skills."
+          content="Can you guess the community."
         />
         <meta name="twitter:image" content="https://pfpguessr.com/pfp.png" />
       </Head>
