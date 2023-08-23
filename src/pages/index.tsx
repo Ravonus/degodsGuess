@@ -318,7 +318,7 @@ export default function Home() {
         count = undefined
         break;
       case 5:
-        count = 500;
+        count = 250;
         break;
       default:
         count = 50;
