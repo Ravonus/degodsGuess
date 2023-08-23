@@ -429,8 +429,8 @@ export default function Home() {
 
       <main className=" flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0009]  to-[#000]">
         <ToastContainer />
-        <div className="container flex flex-col items-center justify-center gap-12 px-4 py-2 md:-mt-32">
-          <div className="mt-5 flex flex-col items-center justify-center gap-4">
+        <div className="container flex flex-col items-center justify-center gap-12 px-4 py-2 ">
+          <div className="flex flex-col items-center justify-center gap-4">
             {twitch && (
               <div className="text-white">
                 <div style={{ display: "flex", width: "35vw", height: "20px" }}>
