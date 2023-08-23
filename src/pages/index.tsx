@@ -516,7 +516,7 @@ export default function Home() {
                     src={nft?.image}
                     alt="NFT"
                     key={`${i}-${nft.name}`}
-                    className="m-2 h-36 rounded border-2 border-black font-bold text-white shadow-xl transition duration-500 hover:scale-110"
+                    className="m-2 h-36 rounded border-2 border-black font-bold text-white shadow-xl transition duration-500 hover:scale-110 cursor-pointer"
                     onClick={() => {
                       window.open(
                         `https://twitter.com/${nft.username}`,
