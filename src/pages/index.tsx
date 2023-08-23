@@ -198,7 +198,7 @@ export default function Home() {
   // }
 
   useEffect(() => {
-    console.log(currentRound)
+
     if (currentRound === 0) return;
     setShouldStartCountdown(true);
     const godOne = randomDeGod();
@@ -229,7 +229,7 @@ export default function Home() {
     }
     if (!nftData) return;
     if (roundInProgress) return; // Prevent multiple guesses in the same round
-   // setRoundInProgress(true); // Start a round
+    setRoundInProgress(true); // Start a round
     // if (nftData.contract === collection) {
     //   toast.success("Correct!", {
     //     autoClose: 500,
@@ -257,7 +257,7 @@ export default function Home() {
       toast.success("Correct!", {
         autoClose: 500,
       });
-      setRoundInProgress(false);
+      
       setAnswers((prev) => ({ ...prev, correct: prev.correct + 1 }));
     } else {
       toast.error("Nope!", {
@@ -277,7 +277,7 @@ export default function Home() {
     }
 
 
-
+    setRoundInProgress(false);
     await new Promise((resolve) => setTimeout(resolve, 500)); // Wait 0.5 seconds before requesting a new NFT
     requestNFT();
   };
@@ -288,6 +288,7 @@ export default function Home() {
 
   function requestNFT() {
     
+      setCountdown(defaultCount);
     if (gameStatus !== "inProgress") return;
 
     setShouldStartCountdown(false);
@@ -296,7 +297,7 @@ export default function Home() {
       gameMode === gameModes.STREAK
     ) {
 
-      setCurrentRound((prevRound) => prevRound + 1); // Go to the next round
+      setCurrentRound((prevRound) => prevRound + 1); 
       
     } else if (gameMode === gameModes.TIMER) {
       setGameStatus("finished");
