@@ -543,6 +543,7 @@ export default function Home() {
             <button
               className="-mt-4 rounded bg-gray-600 px-4 py-2 font-bold text-white shadow-xl transition duration-500 hover:scale-110 hover:bg-gray-700"
               onClick={() => {
+                setLastAnswers([]);
                 setGameStatus("inProgress");
                 setCurrentRound(0);
                 setAnswers({ correct: 0, incorrect: 0 });
