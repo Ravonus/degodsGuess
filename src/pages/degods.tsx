@@ -15,6 +15,7 @@ import Sidebar from "~/components/Sidebar";
 //import gear icon
 import { CogIcon } from "@heroicons/react/24/outline";
 import SideInfo from '~/components/SideInfo';
+import Footer from '~/components/Footer';
 
 //their name needs to be the record to the object
 
@@ -671,20 +672,7 @@ export default function Home() {
               </div>
             </>
           )}
-          <div className="-mt-12 text-white md:mt-0">
-            App created by{" "}
-            <a
-              href="https://twitter.com/R4vonus"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline"
-            >
-              @R4vonus
-            </a>
-          </div>
-          <div className="-mt-12 text-gray-300/30">
-            Donations <a>ravonus.eth</a>
-          </div>
+          <Footer/>
         </div>
       </main>
     </>
