@@ -387,7 +387,7 @@ export default function Home() {
     const createdBy = "@R4vonus";
 
     const diff =
-      defaultCount == 6 ? "Easy" : defaultCount > 3 ? "Medium" : "Hard";
+      defaultCount === 6 ? "Easy" : defaultCount > 3 ? "Medium" : "Hard";
     let scoreText = "";
 
     if (gameMode === gameModes.STREAK) {
