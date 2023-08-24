@@ -53,7 +53,7 @@ const SideInfo: FC<SideInfoProps> = ({
               const community = select.target;
               const communityName = community.value.toLowerCase();
               if (communityName !== currentCommunity?.toLowerCase()) {
-                window.location.href = `/${communityName}`;
+                window.location.href = `https://${communityName.toLowerCase()}.pfpguessr.com`
               }
             }}
           >
