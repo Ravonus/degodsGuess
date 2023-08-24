@@ -390,10 +390,10 @@ export default function Home() {
     let scoreText = "";
 
     if (gameMode === gameModes.STREAK) {
-      scoreText = `I scored a streak of ${correct} in DeCypher ${appLink}`;
+      scoreText = `I scored a streak of ${correct} CT influencers in DeCypher ${appLink}`;
     }
     if (gameMode === gameModes.TIMER) {
-      scoreText = `I scored ${correct}/10 in Decypher ${appLink} on ${diff} difficulty!`;
+      scoreText = `I guessed ${correct}/10 CT influencers in Decypher ${appLink} on ${diff} difficulty!`;
     }
 
     const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
