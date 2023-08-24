@@ -557,7 +557,8 @@ export default function Home() {
               />
             </>
           ) : (
-            <img
+              <img
+              style={{ height: "400px", width: "400px" }}
               alt="NFT"
               src={nftData?.image}
               className="rounded border-2 border-gray-500 shadow-xl transition duration-500 hover:scale-110 hover:border-gray-600"
