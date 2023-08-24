@@ -38,15 +38,14 @@ const SideInfo: FC<SideInfoProps> = ({
       <div className="m-2 flex h-screen items-center justify-center">
         <div className=" mt-6 block px-4 sm:px-6">
           {/* button to go to influencer mode (/) */}
-          {!isHome && (
-            //loop through communities
 
-            <Link href="/">
+
+            <Link href="https://pfpguessr.com">
               <button className="m-1 block w-36 cursor-pointer rounded bg-gray-600 px-4 py-2 font-bold text-white shadow-xl transition duration-500 hover:bg-gray-700">
                 Influencer Guess
               </button>
             </Link>
-          )}
+          
           {/* //loop through communities and create a dropdown to go to each one */}
           <select
             className="m-1 block w-36 cursor-pointer rounded bg-gray-600 px-4 py-2 font-bold text-white shadow-xl transition duration-500 hover:bg-gray-700"
