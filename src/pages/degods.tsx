@@ -9,7 +9,7 @@ import { ToastContainer, toast } from "react-toastify";
 
 import "react-toastify/dist/ReactToastify.css";
 
-import data from "~/../public/data.json";
+import data from "~/../public/data_degods.json";
 import Sidebar from "~/components/Sidebar";
 
 //import gear icon
