@@ -9,7 +9,7 @@ import { ToastContainer, toast } from "react-toastify";
 
 import "react-toastify/dist/ReactToastify.css";
 
-import data from "~/../public/data.json";
+import data from "~/../public/data_degods.json";
 import Sidebar from "~/components/Sidebar";
 
 //import gear icon
@@ -23,7 +23,6 @@ import Footer from '~/components/Footer';
 
 type UserVotes = Record<string, boolean>;
 
-// add game modes
 export const gameModes = {
   TIMER: "TIMER",
   STREAK: "STREAK",
@@ -383,7 +382,7 @@ export default function Home() {
     const correct = `${answers.correct}`;
     const incorrect = `${answers.incorrect}`;
 
-    const appLink = "https://pfpguessr.com";
+    const appLink = "https://decypher.world";
 
     const createdBy = "@R4vonus";
 
@@ -392,10 +391,10 @@ export default function Home() {
     let scoreText = "";
 
     if (gameMode === gameModes.STREAK) {
-      scoreText = `I scored a streak of ${correct} CT influencers in DeCypher ${appLink}`;
+      scoreText = `I scored a streak of ${correct} in DeCypher ${appLink}`;
     }
     if (gameMode === gameModes.TIMER) {
-      scoreText = `I guessed ${correct}/10 CT influencers in Decypher ${appLink} on ${diff} difficulty!`;
+      scoreText = `I scored ${correct}/10 in Decypher ${appLink} on ${diff} difficulty!`;
     }
 
     const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
@@ -409,45 +408,51 @@ export default function Home() {
     <>
       <Head>
         <link rel="icon" href="/favicon.ico" />
-        <title>PFP Guessr</title>
+        <title>DeCypher</title>
         <meta name="title" content="DeGods" />
         <meta
           name="description"
-          content="Can you guess the community members PFPs."
+          content="Can you guess the community members."
         />
 
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://pfpguessr.com" />
+        <meta property="og:url" content="https://decypher.world" />
         <meta property="og:title" content="DeCypher" />
         <meta
           property="og:description"
           content="Can you guess the community members."
         />
-        <meta property="og:image" content="https://pfpguessr.com/pfp2.png" />
+        <meta property="og:image" content="https://decypher.world/pfp2.png" />
 
         <meta property="twitter:card" content="summary_large_image" />
-        <meta property="twitter:url" content="https://pfpguessr.com/" />
-        <meta property="twitter:title" content="PFPGuessr" />
+        <meta property="twitter:url" content="https://decypher.world/" />
+        <meta property="twitter:title" content="DeGods" />
         <meta
           property="twitter:description"
-          content="Can you guess the community members PFP."
+          content="Can you guess the community members."
         />
         <meta
           property="twitter:image"
-          content="https://pfpguessr.com/pfp2.png"
+          content="https://decypher.world/pfp2.png"
         />
 
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:url" content="https://pfpguessr.com/" />
-        <meta name="twitter:title" content="PFPGuessr" />
+        <meta name="twitter:url" content="https://decypher.world/" />
+        <meta name="twitter:title" content="DeCypher" />
         <meta
           name="twitter:description"
-          content="Can you guess the community members PFPs."
+          content="Can you guess the community members."
         />
-        <meta name="twitter:image" content="https://pfpguessr.com/pfp2.png" />
+        <meta name="twitter:image" content="https://decypher.world/pfp2.png" />
       </Head>
       <Sidebar setOpen={setOpen} open={open}>
-       <SideInfo gameMode={gameMode} gameStatus={gameStatus} setDifficulty={setDifficulty} setGameMode={setGameMode} twitch={twitch} />
+        <SideInfo
+          gameMode={gameMode}
+          gameStatus={gameStatus}
+          setDifficulty={setDifficulty}
+          setGameMode={setGameMode}
+          twitch={twitch}
+        />
       </Sidebar>
 
       <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#313131]  to-[#000]">
@@ -525,8 +530,7 @@ export default function Home() {
               />
             </>
           ) : (
-              <img
-              style={{ height: "400px", width: "400px" }}
+            <img
               alt="NFT"
               src={nftData?.image}
               className="rounded border-2 border-gray-500 shadow-xl transition duration-500 hover:scale-110 hover:border-gray-600"
