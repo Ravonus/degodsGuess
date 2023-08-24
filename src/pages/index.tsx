@@ -386,8 +386,23 @@ export default function Home() {
 
     const createdBy = "@R4vonus";
 
+
+                  // <option value="30">Noob</option>
+                  // <option value="8">Easy</option>
+                  // <option defaultChecked value="5">
+                  //   Medium
+                  // </option>
+                  // <option value="3">Hard</option>
+
+
     const diff =
-      defaultCount === 6 ? "Easy" : defaultCount > 3 ? "Medium" : "Hard";
+      defaultCount === 30
+        ? "Noob"
+        : defaultCount === 8
+        ? "Easy"
+        : defaultCount === 5
+        ? "Medium"
+        : "Hard";
     let scoreText = "";
 
     if (gameMode === gameModes.STREAK) {
