@@ -53,7 +53,7 @@ const SideInfo: FC<SideInfoProps> = ({
               const community = select.target;
               const communityName = community.value.toLowerCase();
               if (communityName !== currentCommunity?.toLowerCase()) {
-                window.location.href = `https://${communityName.toLowerCase()}.pfpguessr.com`
+                window.location.href = `https://${communityName.toLowerCase()}.pfpguessr.com`;
               }
             }}
           >
@@ -78,10 +78,13 @@ const SideInfo: FC<SideInfoProps> = ({
           {(gameStatus === "notStarted" || gameStatus === "finished") &&
             !twitch && (
               <select
+                defaultChecked
+                value="5"
                 className="m-1 block w-36 cursor-pointer rounded bg-gray-600 px-4 py-2 font-bold text-white shadow-xl transition duration-500 hover:bg-gray-700"
                 onChange={(e) => setDifficulty(parseInt(e.target.value))}
               >
                 <>
+                  <option value="30">Noob</option>
                   <option value="8">Easy</option>
                   <option defaultChecked value="5">
                     Medium
