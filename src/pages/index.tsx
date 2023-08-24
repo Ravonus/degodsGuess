@@ -382,7 +382,7 @@ export default function Home() {
     const correct = `${answers.correct}`;
     const incorrect = `${answers.incorrect}`;
 
-    const appLink = "https://decypher.world";
+    const appLink = "https://pfpguessr.com";
 
     const createdBy = "@R4vonus";
 
@@ -416,16 +416,16 @@ export default function Home() {
         />
 
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://decypher.world" />
+        <meta property="og:url" content="https://pfpguessr.com" />
         <meta property="og:title" content="DeCypher" />
         <meta
           property="og:description"
           content="Can you guess the community members."
         />
-        <meta property="og:image" content="https://decypher.world/pfp2.png" />
+        <meta property="og:image" content="https://pfpguessr.com/pfp2.png" />
 
         <meta property="twitter:card" content="summary_large_image" />
-        <meta property="twitter:url" content="https://decypher.world/" />
+        <meta property="twitter:url" content="https://pfpguessr.com/" />
         <meta property="twitter:title" content="DeGods" />
         <meta
           property="twitter:description"
@@ -433,17 +433,17 @@ export default function Home() {
         />
         <meta
           property="twitter:image"
-          content="https://decypher.world/pfp2.png"
+          content="https://pfpguessr.com/pfp2.png"
         />
 
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:url" content="https://decypher.world/" />
+        <meta name="twitter:url" content="https://pfpguessr.com/" />
         <meta name="twitter:title" content="DeCypher" />
         <meta
           name="twitter:description"
           content="Can you guess the community members."
         />
-        <meta name="twitter:image" content="https://decypher.world/pfp2.png" />
+        <meta name="twitter:image" content="https://pfpguessr.com/pfp2.png" />
       </Head>
       <Sidebar setOpen={setOpen} open={open}>
         <SideInfo
