@@ -1,42 +1,43 @@
-import { useState, useEffect } from "react";
+import { type GetServerSideProps } from "next";
 import Head from "next/head";
-import { useRouter } from "next/router";
+
+import { ReactElement, useEffect, useState } from "react";
+import Footer from "~/components/Footer";
+
+import data from "~/../public/data.json";
+import { type Data, gameModes, type UserVotes } from "~/pages";
 
 import { ToastContainer, toast } from "react-toastify";
-import html2canvas from "html2canvas";
-import "react-toastify/dist/ReactToastify.css";
-
-import data from "~/../public/data_degods.json";
-import Sidebar from "~/components/Sidebar";
-
-//import gear icon
 import { CogIcon } from "@heroicons/react/24/outline";
-import SideInfo from "~/components/SideInfo";
-import Footer from "~/components/Footer";
-import TwitterShare from '~/components/TwitterShare';
+import { useRouter } from "next/router";
 
-//their name needs to be the record to the object
+import TwitterShare from "~/components/TwitterShare";
+import axios from "axios";
+import ImageComponent from "~/components/ImageComponent";
 
-//change above to a record not interface
-
-export type UserVotes = Record<string, boolean>;
-
-export const gameModes = {
-  TIMER: "TIMER",
-  STREAK: "STREAK",
-};
-
-export interface Data {
-  image: string;
-  username: string;
-  rank: number;
-  tokenID: number;
-  name: string;
-  correct: boolean;
+interface ImagePageProps {
+  imageUrl: string;
 }
 
+interface MyData {
+  tokens: {
+    token: {
+      tokenId: string;
+      image: string;
+      contract: string;
+      collection: {
+        name: string;
+      };
+    };
+  }[];
+  continuation?: string;
+}
 
-export default function Home() {
+interface MyResponse {
+  data: MyData;
+}
+
+const ImagePage: React.FC<ImagePageProps> = ({ imageUrl }) => {
   const [nftData, setNftData] = useState<Data>();
   const [answers, setAnswers] = useState({
     correct: 0,
@@ -66,11 +67,12 @@ export default function Home() {
   const [azukiWidth, setAzukiWidth] = useState(100);
   const [elementalWidth, setElementalWidth] = useState(100);
 
-  // const [socket, setSocket] = useState<Socket>();
+  //get id of image (url param)
+
+  const splitUrl = imageUrl.split("/");
+  const imageId = splitUrl[splitUrl.length - 1];
 
   const router = useRouter();
-
-  //see if ?begin is in the url
 
   const twitch = router.query.twitch ? router.query.twitch : false;
 
@@ -251,36 +253,8 @@ export default function Home() {
 
   // useEffect(() => {
   //   if (!nftData) return;
-  //   const nftAnswer = {
-  //     ...nftData,
-  //     correct: nftData.name === lastIncorrect,
-  //   };
-  //   setLastAnswers((prev) => [...prev, nftAnswer]);
-  // }, [nftData, lastIncorrect]);
-
-  const convertDivToPNG = async () => {
-    const divElement = document.querySelector("#lastAnswers"); // Select the div by its class
-
-    //add gradient bg
-
-    divElement?.classList.add(
-      "bg-gradient-to-b",
-      "from-[#313131]",
-      "to-[#000]"
-    );
-
-    // Convert div to canvas
-    const canvas = await html2canvas(divElement as HTMLElement, {
-      useCORS: true, // This is important if images are coming from external sources
-      scale: 1, // Adjust as needed
-    });
-
-    // Convert canvas to PNG and download it
-    const link = document.createElement("a");
-    link.download = "divAsImage.png";
-    link.href = canvas.toDataURL();
-    link.click();
-  };
+  //   setLastAnswers((prev) => [...prev, nftData]);
+  // }, [nftData]);
 
   const handleGuess = async (username: string) => {
     if (currentRound > 10 && gameMode === gameModes.TIMER) {
@@ -320,7 +294,6 @@ export default function Home() {
       ...nftData,
       correct: false,
     };
-
     if (username === nftData.name) {
       nftAnswer.correct = true;
       toast.success(`Correct - ${nftData.name}`, {
@@ -332,9 +305,7 @@ export default function Home() {
       toast.error(nftData.name, {
         autoClose: 500,
       });
-
       setAnswers((prev) => ({ ...prev, incorrect: prev.incorrect + 1 }));
-
       setLastIncorrect(nftData.image);
 
       // If game mode is STREAK and the answer is incorrect, finish the game
@@ -346,6 +317,7 @@ export default function Home() {
         return;
       }
     }
+
     setLastAnswers((prev) => [...prev, nftAnswer]);
     setRoundInProgress(false);
     await new Promise((resolve) => setTimeout(resolve, 500)); // Wait 0.5 seconds before requesting a new NFT
@@ -414,97 +386,54 @@ export default function Home() {
     setDefaultCount(diff);
   }
 
-  const shareScoreOnTwitter = () => {
-    convertDivToPNG().catch(console.error);
-    const correct = `${answers.correct}`;
-    const incorrect = `${answers.incorrect}`;
+  // const NFT = api.nft.getNFT.useQuery({
+  //   address: contract,
+  //   tokenId,
+  //   isMatic: matic === "true",
+  // });
 
-    const appLink = "https://pfpguessr.com";
+  // //use effect to set body gradient color
+  // useEffect(() => {
+  //   const body = document.querySelector("body");
+  //   if (body) {
+  //     body.classList.add("bg-gradient-to-b", "from-[#313131]", "to-[#000]");
+  //     body.style.backgroundImage = "none";
+  //     body.style.backgroundColor = "#000";
+  //   }
+  // }, []);
 
-    const createdBy = "@R4vonus";
-
-    // <option value="30">Noob</option>
-    // <option value="8">Easy</option>
-    // <option defaultChecked value="5">
-    //   Medium
-    // </option>
-    // <option value="3">Hard</option>
-
-    const diff =
-      defaultCount === 30
-        ? "Noob"
-        : defaultCount === 8
-        ? "Easy"
-        : defaultCount === 5
-        ? "Medium"
-        : "Hard";
-    let scoreText = "";
-
-    if (gameMode === gameModes.STREAK) {
-      scoreText = `I scored a streak of ${correct} in DeCypher ${appLink}`;
-    }
-    if (gameMode === gameModes.TIMER) {
-      scoreText = `I scored ${correct}/10 in Decypher ${appLink} on ${diff} difficulty!`;
-    }
-
-    const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-      scoreText + `\n\n Created by ${createdBy}\n`
-    )}`;
-
-    window.open(tweetUrl);
-  };
+  // useEffect(() => {
+  //   //redirect to home page
+  //   const redirect = () => {
+  //     window.location.href = "/";
+  //   };
+  //   redirect();
+  // }, []);
 
   return (
-    <>
+    <div>
       <Head>
-        <link rel="icon" href="/favicon.ico" />
-        <title>DeCypher</title>
-        <meta name="title" content="DeGods" />
-        <meta
-          name="description"
-          content="Can you guess the community members."
-        />
-
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://pfpguessr.com" />
-        <meta property="og:title" content="DeCypher" />
-        <meta
-          property="og:description"
-          content="Can you guess the community members."
-        />
-        <meta property="og:image" content="https://pfpguessr.com/pfp2.png" />
-
-        <meta property="twitter:card" content="summary_large_image" />
-        <meta property="twitter:url" content="https://pfpguessr.com/" />
-        <meta property="twitter:title" content="DeGods" />
-        <meta
-          property="twitter:description"
-          content="Can you guess the community members."
-        />
-        <meta
-          property="twitter:image"
-          content="https://pfpguessr.com/pfp2.png"
-        />
+        <title>PFPGuessr</title>
+        <meta name="description" content="Can you guess popular CT PFPs." />
 
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:url" content="https://pfpguessr.com/" />
-        <meta name="twitter:title" content="DeCypher" />
+        <meta name="twitter:image" content={imageUrl} />
+        <meta name="twitter:url" content="https://pfpguessr.com" />
+        <meta name="twitter:title" content={`Can you guess popular CT PFPs.`} />
         <meta
           name="twitter:description"
-          content="Can you guess the community members."
+          content={`A fun game to guess Crypto Twitter PFPs.`}
         />
-        <meta name="twitter:image" content="https://pfpguessr.com/pfp2.png" />
-      </Head>
-      <Sidebar setOpen={setOpen} open={open}>
-        <SideInfo
-          diffculty={defaultCount}
-          gameStatus={gameStatus}
-          setDifficulty={setDifficulty}
-          setGameMode={setGameMode}
-          twitch={twitch}
+        <meta property="og:image" content={`${imageUrl}.png`} />
+        <meta property="og:url" content="https://pfpguessr.com" />
+        <meta property="og:title" content={`Can you guess popular CT PFPs.`} />
+        <meta
+          property="og:description"
+          content={`A fun game to guess Crypto Twitter PFPs.`}
         />
-      </Sidebar>
 
+        {/* Other meta tags as needed */}
+      </Head>
       <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#313131]  to-[#000]">
         <ToastContainer />
 
@@ -572,15 +501,10 @@ export default function Home() {
             </div>
           </div>
           {!nftData?.image ? (
-            <>
-              <img
-                alt="NFT"
-                src="/aore.png"
-                className="rounded border-2 border-gray-500 shadow-xl transition duration-500 hover:scale-110 hover:border-gray-600"
-              />
-            </>
+            <ImageComponent imageId={imageId} />
           ) : (
             <img
+              style={{ height: "400px", width: "400px" }}
               alt="NFT"
               src={nftData?.image}
               className="rounded border-2 border-gray-500 shadow-xl transition duration-500 hover:scale-110 hover:border-gray-600"
@@ -694,7 +618,12 @@ export default function Home() {
             </>
           )}
           {gameStatus === "finished" && (
-            <TwitterShare answers={answers} defaultCount={defaultCount} gameMode={gameMode} lastAnswers={lastAnswers}/>
+            <TwitterShare
+              answers={answers}
+              gameMode={gameMode}
+              defaultCount={defaultCount}
+              lastAnswers={lastAnswers}
+            />
           )}
           {(gameStatus === "notStarted" || gameStatus === "finished") && (
             <>
@@ -724,6 +653,28 @@ export default function Home() {
           <Footer />
         </div>
       </main>
-    </>
+    </div>
   );
-}
+};
+
+export default ImagePage;
+
+// Your logic to get the image URL by ID
+export const getImageUrlById = (imageId: string): string => {
+  // Replace with the actual logic to get the image URL
+  return `https://res.cloudinary.com/doaxhxkmq/image/upload/v1692002576/${imageId}`;
+};
+
+export const getServerSideProps: GetServerSideProps<ImagePageProps> = async (
+  context
+) => {
+  const imageId = context.params?.imageId as string;
+
+  const imageUrl = getImageUrlById(imageId);
+
+  return Promise.resolve({
+    props: {
+      imageUrl,
+    },
+  });
+};
