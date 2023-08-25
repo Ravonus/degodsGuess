@@ -462,7 +462,7 @@ export default function Home() {
       </Head>
       <Sidebar setOpen={setOpen} open={open}>
         <SideInfo
-          gameMode={gameMode}
+          diffculty={defaultCount}
           gameStatus={gameStatus}
           setDifficulty={setDifficulty}
           setGameMode={setGameMode}

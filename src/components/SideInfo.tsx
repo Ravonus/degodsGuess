@@ -5,9 +5,9 @@ import { Dialog } from "@headlessui/react";
 import Link from "next/link";
 
 interface SideInfoProps {
+  diffculty: number;
   twitch: string | false | string[];
   gameStatus: string;
-  gameMode: string;
   setGameMode: (gameMode: string) => void;
   setDifficulty: (difficulty: number) => void;
 }
@@ -16,7 +16,7 @@ const communties = ["DeGods"];
 
 const SideInfo: FC<SideInfoProps> = ({
   gameStatus,
-  gameMode,
+  diffculty,
   setGameMode,
   twitch,
   setDifficulty,
@@ -78,7 +78,7 @@ const SideInfo: FC<SideInfoProps> = ({
           {(gameStatus === "notStarted" || gameStatus === "finished") &&
             !twitch && (
             <select
-                defaultChecked value="5"
+                defaultChecked value={diffculty}
                 className="m-1 block w-36 cursor-pointer rounded bg-gray-600 px-4 py-2 font-bold text-white shadow-xl transition duration-500 hover:bg-gray-700"
                 onChange={(e) => setDifficulty(parseInt(e.target.value))}
               >
