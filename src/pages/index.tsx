@@ -293,6 +293,7 @@ export default function Home() {
       correct: false,
     };
     if (username === nftData.name) {
+      nftAnswer.correct = true;
       toast.success(`Correct - ${nftData.name}`, {
         autoClose: 500,
       });
@@ -642,7 +643,9 @@ export default function Home() {
                     src={nft?.image}
                     alt="NFT"
                     key={`${i}-${nft.name}`}
-                    className="m-2 h-36 cursor-pointer rounded border-2 border-black font-bold text-white shadow-xl transition duration-500 hover:scale-110"
+                    className={`m-2 h-36 cursor-pointer rounded border-2 font-bold text-white shadow-xl transition duration-500 hover:scale-110 ${
+                      nft?.correct ? "border-green-500" : "border-red-500"
+                    }`}
                     onClick={() => {
                       window.open(
                         `https://twitter.com/${nft.username}`,
