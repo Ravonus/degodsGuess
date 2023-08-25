@@ -495,6 +495,12 @@ export default function Home() {
         />
         <meta name="twitter:image" content="https://pfpguessr.com/pfp2.png" />
       </Head>
+      <a
+        id="twitterShareLink"
+        href="#"
+        target="_blank"
+        style={{ display: "none" }}
+      ></a>
       <Sidebar setOpen={setOpen} open={open}>
         <SideInfo
           diffculty={defaultCount}
@@ -694,7 +700,12 @@ export default function Home() {
             </>
           )}
           {gameStatus === "finished" && (
-            <TwitterShare answers={answers} defaultCount={defaultCount} gameMode={gameMode} lastAnswers={lastAnswers}/>
+            <TwitterShare
+              answers={answers}
+              defaultCount={defaultCount}
+              gameMode={gameMode}
+              lastAnswers={lastAnswers}
+            />
           )}
           {(gameStatus === "notStarted" || gameStatus === "finished") && (
             <>
