@@ -132,6 +132,9 @@ const TwitterShare: FC<TwitterShareProps> = ({
       "twitterShareLink"
     ) as HTMLAnchorElement;
     twitterLink.href = tweetUrl;
+    if ((window.navigator as unknown as {standalone:string}).standalone) {
+      window.open(tweetUrl, "_blank");
+    } else 
     twitterLink.click();
   };
 

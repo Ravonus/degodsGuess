@@ -424,6 +424,7 @@ export default function Home() {
           content="Can you guess the community members PFPs."
         />
         <meta name="twitter:image" content="https://pfpguessr.com/pfp2.png" />
+        <meta name="mobile-web-app-capable" content="yes" />
       </Head>
       <a
         id="twitterShareLink"

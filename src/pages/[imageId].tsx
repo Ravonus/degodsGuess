@@ -419,6 +419,7 @@ const ImagePage: React.FC<ImagePageProps> = ({ imageUrl }) => {
       <Head>
         <title>PFPGuessr</title>
         <meta name="description" content="Can you guess popular CT PFPs." />
+        <meta name="mobile-web-app-capable" content="yes"/>
 
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:image" content={imageUrl} />
