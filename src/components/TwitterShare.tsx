@@ -125,7 +125,7 @@ const TwitterShare: FC<TwitterShareProps> = ({
       }
     });
 
-    const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+    const tweetUrl = `https://x.com/intent/tweet?text=${encodeURIComponent(
       scoreText + `\n\n Created by ${createdBy}\n ${appLink}`
     )}`;
 
