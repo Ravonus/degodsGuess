@@ -129,7 +129,9 @@ const TwitterShare: FC<TwitterShareProps> = ({
       scoreText + `\n\n Created by ${createdBy}\n ${appLink}`
     )}`;
 
-    window.open(tweetUrl);
+        const twitterLink = document.getElementById("twitterShareLink") as HTMLAnchorElement;
+        twitterLink.href = tweetUrl;
+        twitterLink.click();
   };
 
   return (

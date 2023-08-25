@@ -425,6 +425,13 @@ export default function Home() {
         />
         <meta name="twitter:image" content="https://pfpguessr.com/pfp2.png" />
       </Head>
+      <a
+        id="twitterShareLink"
+        href="#"
+        target="_blank"
+        style={{ display: "none" }}
+      ></a>
+
       <Sidebar setOpen={setOpen} open={open}>
         <SideInfo
           difficulty={defaultCount}
