@@ -3,7 +3,7 @@ import { type Data, gameModes } from "~/pages";
 
 import crypto from "crypto";
 
-import html2canvas from 'html2canvas';
+import html2canvas from "html2canvas";
 
 interface TwitterShareProps {
   answers: {
@@ -26,7 +26,7 @@ const TwitterShare: FC<TwitterShareProps> = ({
 
     //add gradient bg
 
-    if(!divElement) return;
+    if (!divElement) return;
 
     divElement?.classList.add(
       "bg-gradient-to-b",
@@ -35,7 +35,7 @@ const TwitterShare: FC<TwitterShareProps> = ({
     );
 
     // Convert div to canvas
-    const canvas = await html2canvas(divElement , {
+    const canvas = await html2canvas(divElement, {
       useCORS: true,
       scale: 1,
     });
@@ -44,51 +44,50 @@ const TwitterShare: FC<TwitterShareProps> = ({
     const link = document.createElement("a");
     const src = canvas.toDataURL("image/png");
 
-    const id = await handleUploadToCloudinary(src).catch((err) => console.log(err));
+    const id = await handleUploadToCloudinary(src).catch((err) =>
+      console.log(err)
+    );
     return id;
   };
 
-    const handleUploadToCloudinary = async (simplifiedImageSrc:string) => {
-      if (!simplifiedImageSrc) return; // Ensure the source is available
+  const handleUploadToCloudinary = async (simplifiedImageSrc: string) => {
+    if (!simplifiedImageSrc) return; // Ensure the source is available
 
-      const formData = new FormData();
-      const hash = generateHash(simplifiedImageSrc);
-      formData.append("file", simplifiedImageSrc);
-      formData.append("upload_preset", "jvddav02");
-      formData.append("public_id", hash);
-      //generate filename based on hash of image
+    const formData = new FormData();
+    const hash = generateHash(simplifiedImageSrc);
+    formData.append("file", simplifiedImageSrc);
+    formData.append("upload_preset", "jvddav02");
+    formData.append("public_id", hash);
+    //generate filename based on hash of image
 
-      try {
-        const response = await fetch(
-          "https://api.cloudinary.com/v1_1/doaxhxkmq/image/upload",
-          { method: "POST", body: formData }
-        );
+    try {
+      const response = await fetch(
+        "https://api.cloudinary.com/v1_1/doaxhxkmq/image/upload",
+        { method: "POST", body: formData }
+      );
 
-        const data = (await response.json()) as {
-          secure_url: string;
-          public_id: string;
-        };
-        const public_id = data.public_id;
+      const data = (await response.json()) as {
+        secure_url: string;
+        public_id: string;
+      };
+      const public_id = data.public_id;
 
-        return public_id;
+      return public_id;
 
-        // You can use the secureUrl here, such as saving it to your server or updating the state
-      } catch (error) {
-        console.error("Failed to upload image", error);
-      }
-  };
-  
-    function generateHash(data: string) {
-      return crypto.createHash("sha256").update(data).digest("hex");
+      // You can use the secureUrl here, such as saving it to your server or updating the state
+    } catch (error) {
+      console.error("Failed to upload image", error);
     }
+  };
+
+  function generateHash(data: string) {
+    return crypto.createHash("sha256").update(data).digest("hex");
+  }
 
   const shareScoreOnTwitter = async () => {
-
     const id = await convertDivToPNG().catch((err) => console.log(err));
 
-    console.log()
-
-
+    console.log();
 
     const correct = `${answers.correct}`;
     const incorrect = `${answers.incorrect}`;
@@ -129,15 +128,19 @@ const TwitterShare: FC<TwitterShareProps> = ({
       scoreText + `\n\n Created by ${createdBy}\n ${appLink}`
     )}`;
 
-        const twitterLink = document.getElementById("twitterShareLink") as HTMLAnchorElement;
-        twitterLink.href = tweetUrl;
-        twitterLink.click();
+    const twitterLink = document.getElementById(
+      "twitterShareLink"
+    ) as HTMLAnchorElement;
+    twitterLink.href = tweetUrl;
+    twitterLink.click();
   };
 
   return (
     <button
       className="-mt-8 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-      onClick={() => { shareScoreOnTwitter().catch((err) => console.log(err)) }}
+      onClick={() => {
+        shareScoreOnTwitter().catch((err) => console.log(err));
+      }}
     >
       Share on Twitter
     </button>
