@@ -14,6 +14,8 @@ import { useRouter } from "next/router";
 import TwitterShare from "~/components/TwitterShare";
 import axios from "axios";
 import ImageComponent from "~/components/ImageComponent";
+import Sidebar from '~/components/Sidebar';
+import SideInfo from '~/components/SideInfo';
 
 interface ImagePageProps {
   imageUrl: string;
@@ -434,6 +436,15 @@ const ImagePage: React.FC<ImagePageProps> = ({ imageUrl }) => {
 
         {/* Other meta tags as needed */}
       </Head>
+      <Sidebar setOpen={setOpen} open={open}>
+        <SideInfo
+          diffculty={defaultCount}
+          gameStatus={gameStatus}
+          setDifficulty={setDifficulty}
+          setGameMode={setGameMode}
+          twitch={twitch}
+        />
+      </Sidebar>
       <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#313131]  to-[#000]">
         <ToastContainer />
 
