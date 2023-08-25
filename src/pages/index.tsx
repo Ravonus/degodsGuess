@@ -1,12 +1,9 @@
-import { useState, useEffect, use } from "react";
+import { useState, useEffect } from "react";
 import Head from "next/head";
-import Link from "next/link";
-import { api, type RouterOutputs } from "~/utils/api";
 import { useRouter } from "next/router";
-import { Dialog } from "@headlessui/react";
-import { type AppType } from "next/app";
-import { ToastContainer, toast } from "react-toastify";
 
+import { ToastContainer, toast } from "react-toastify";
+import html2canvas from "html2canvas";
 import "react-toastify/dist/ReactToastify.css";
 
 import data from "~/../public/data_degods.json";
@@ -14,8 +11,9 @@ import Sidebar from "~/components/Sidebar";
 
 //import gear icon
 import { CogIcon } from "@heroicons/react/24/outline";
-import SideInfo from '~/components/SideInfo';
-import Footer from '~/components/Footer';
+import SideInfo from "~/components/SideInfo";
+import Footer from "~/components/Footer";
+import TwitterShare from '~/components/TwitterShare';
 
 //their name needs to be the record to the object
 
@@ -28,13 +26,15 @@ export const gameModes = {
   STREAK: "STREAK",
 };
 
-interface Data {
+export interface Data {
   image: string;
   username: string;
   rank: number;
   tokenID: number;
   name: string;
+  correct: boolean;
 }
+
 
 export default function Home() {
   const [nftData, setNftData] = useState<Data>();
@@ -249,10 +249,38 @@ export default function Home() {
     setRestart(false);
   }, [restart]);
 
-  useEffect(() => {
-    if (!nftData) return;
-    setLastAnswers((prev) => [...prev, nftData]);
-  }, [nftData]);
+  // useEffect(() => {
+  //   if (!nftData) return;
+  //   const nftAnswer = {
+  //     ...nftData,
+  //     correct: nftData.name === lastIncorrect,
+  //   };
+  //   setLastAnswers((prev) => [...prev, nftAnswer]);
+  // }, [nftData, lastIncorrect]);
+
+  const convertDivToPNG = async () => {
+    const divElement = document.querySelector("#lastAnswers"); // Select the div by its class
+
+    //add gradient bg
+
+    divElement?.classList.add(
+      "bg-gradient-to-b",
+      "from-[#313131]",
+      "to-[#000]"
+    );
+
+    // Convert div to canvas
+    const canvas = await html2canvas(divElement as HTMLElement, {
+      useCORS: true, // This is important if images are coming from external sources
+      scale: 1, // Adjust as needed
+    });
+
+    // Convert canvas to PNG and download it
+    const link = document.createElement("a");
+    link.download = "divAsImage.png";
+    link.href = canvas.toDataURL();
+    link.click();
+  };
 
   const handleGuess = async (username: string) => {
     if (currentRound > 10 && gameMode === gameModes.TIMER) {
@@ -288,7 +316,13 @@ export default function Home() {
     //   }
     // }
 
+    const nftAnswer = {
+      ...nftData,
+      correct: false,
+    };
+
     if (username === nftData.name) {
+      nftAnswer.correct = true;
       toast.success(`Correct - ${nftData.name}`, {
         autoClose: 500,
       });
@@ -298,7 +332,9 @@ export default function Home() {
       toast.error(nftData.name, {
         autoClose: 500,
       });
+
       setAnswers((prev) => ({ ...prev, incorrect: prev.incorrect + 1 }));
+
       setLastIncorrect(nftData.image);
 
       // If game mode is STREAK and the answer is incorrect, finish the game
@@ -310,7 +346,7 @@ export default function Home() {
         return;
       }
     }
-
+    setLastAnswers((prev) => [...prev, nftAnswer]);
     setRoundInProgress(false);
     await new Promise((resolve) => setTimeout(resolve, 500)); // Wait 0.5 seconds before requesting a new NFT
     requestNFT();
@@ -379,6 +415,7 @@ export default function Home() {
   }
 
   const shareScoreOnTwitter = () => {
+    convertDivToPNG().catch(console.error);
     const correct = `${answers.correct}`;
     const incorrect = `${answers.incorrect}`;
 
@@ -386,14 +423,12 @@ export default function Home() {
 
     const createdBy = "@R4vonus";
 
-
-                  // <option value="30">Noob</option>
-                  // <option value="8">Easy</option>
-                  // <option defaultChecked value="5">
-                  //   Medium
-                  // </option>
-                  // <option value="3">Hard</option>
-
+    // <option value="30">Noob</option>
+    // <option value="8">Easy</option>
+    // <option defaultChecked value="5">
+    //   Medium
+    // </option>
+    // <option value="3">Hard</option>
 
     const diff =
       defaultCount === 30
@@ -659,22 +694,22 @@ export default function Home() {
             </>
           )}
           {gameStatus === "finished" && (
-            <button
-              className="-mt-8 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-              onClick={shareScoreOnTwitter}
-            >
-              Share on Twitter
-            </button>
+            <TwitterShare answers={answers} defaultCount={defaultCount} gameMode={gameMode} lastAnswers={lastAnswers}/>
           )}
           {(gameStatus === "notStarted" || gameStatus === "finished") && (
             <>
-              <div className="mx-auto grid grid-cols-2 justify-items-center gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+              <div
+                id="lastAnswers"
+                className="mx-auto grid grid-cols-2 justify-items-center gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
+              >
                 {lastAnswers.map((nft, i) => (
                   <img
                     src={nft?.image}
                     alt="NFT"
                     key={`${i}-${nft.name}`}
-                    className="m-2 h-36 cursor-pointer rounded border-2 border-black font-bold text-white shadow-xl transition duration-500 hover:scale-110"
+                    className={`m-2 h-36 cursor-pointer rounded border-2 font-bold text-white shadow-xl transition duration-500 hover:scale-110 ${
+                      nft?.correct ? "border-green-500" : "border-red-500"
+                    }`}
                     onClick={() => {
                       window.open(
                         `https://twitter.com/${nft.username}`,
@@ -686,7 +721,7 @@ export default function Home() {
               </div>
             </>
           )}
-          <Footer/>
+          <Footer />
         </div>
       </main>
     </>
