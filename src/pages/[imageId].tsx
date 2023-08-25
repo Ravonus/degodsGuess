@@ -438,6 +438,12 @@ const ImagePage: React.FC<ImagePageProps> = ({ imageUrl }) => {
 
         {/* Other meta tags as needed */}
       </Head>
+      <a
+        id="twitterShareLink"
+        href="#"
+        target="_blank"
+        style={{ display: "none" }}
+      ></a>
       <Sidebar setOpen={setOpen} open={open}>
         <SideInfo
           difficulty={defaultCount}
