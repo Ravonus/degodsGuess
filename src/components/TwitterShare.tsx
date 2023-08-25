@@ -4,6 +4,7 @@ import { type Data, gameModes } from "~/pages";
 import crypto from "crypto";
 
 import html2canvas from "html2canvas";
+import { toast } from 'react-toastify';
 
 interface TwitterShareProps {
   answers: {
@@ -84,6 +85,29 @@ const TwitterShare: FC<TwitterShareProps> = ({
     return crypto.createHash("sha256").update(data).digest("hex");
   }
 
+  function isInAppBrowser() {
+    const ua = window.navigator.userAgent;
+
+    // Facebook in-app browser detection
+    const isFacebookApp = ua.indexOf("FBAN") > -1 || ua.indexOf("FBAV") > -1;
+
+    // Instagram in-app browser detection
+    const isInstagramApp = ua.indexOf("Instagram") > -1;
+
+    // Twitter in-app browser detection
+    const isTwitterApp = ua.indexOf("Twitter") > -1;
+
+    // Snapchat in-app browser detection
+    const isSnapchatApp = ua.indexOf("Snapchat") > -1;
+
+    return isFacebookApp || isInstagramApp || isTwitterApp || isSnapchatApp;
+  }
+
+  function isIOS() {
+    const ua = window.navigator.userAgent;
+    return /iPad|iPhone|iPod/.test(ua);
+  }
+
   const shareScoreOnTwitter = async () => {
     const id = await convertDivToPNG().catch((err) => console.log(err));
 
@@ -132,10 +156,15 @@ const TwitterShare: FC<TwitterShareProps> = ({
       "twitterShareLink"
     ) as HTMLAnchorElement;
     twitterLink.href = tweetUrl;
-    if ((window.navigator as unknown as {standalone:string}).standalone) {
+    if (isIOS() && isInAppBrowser()) {
+      //need to copy to clipboard and tell user to paste (or open in safari)
+      navigator.clipboard.writeText(tweetUrl).catch((err) => console.log(err));
+      toast("Can't open browser, either open site in native browser. Link copied to clipboard.");
+    } else if (
+      (window.navigator as unknown as { standalone: string }).standalone
+    ) {
       window.open(tweetUrl, "_blank");
-    } else 
-    twitterLink.click();
+    } else twitterLink.click();
   };
 
   return (
