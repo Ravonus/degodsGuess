@@ -1,10 +1,8 @@
 import { useState, useEffect, use } from "react";
 import Head from "next/head";
-import Link from "next/link";
-import { api, type RouterOutputs } from "~/utils/api";
+
 import { useRouter } from "next/router";
-import { Dialog } from "@headlessui/react";
-import { type AppType } from "next/app";
+
 import { ToastContainer, toast } from "react-toastify";
 
 import "react-toastify/dist/ReactToastify.css";
@@ -14,8 +12,9 @@ import Sidebar from "~/components/Sidebar";
 
 //import gear icon
 import { CogIcon } from "@heroicons/react/24/outline";
-import SideInfo from '~/components/SideInfo';
-import Footer from '~/components/Footer';
+import SideInfo from "~/components/SideInfo";
+import Footer from "~/components/Footer";
+import TwitterShare from "~/components/TwitterShare";
 
 //their name needs to be the record to the object
 
@@ -29,12 +28,13 @@ export const gameModes = {
   STREAK: "STREAK",
 };
 
-interface Data {
+export interface Data {
   image: string;
   username: string;
   rank: number;
   tokenID: number;
   name: string;
+  correct: boolean;
 }
 
 export default function Home() {
@@ -250,10 +250,10 @@ export default function Home() {
     setRestart(false);
   }, [restart]);
 
-  useEffect(() => {
-    if (!nftData) return;
-    setLastAnswers((prev) => [...prev, nftData]);
-  }, [nftData]);
+  // useEffect(() => {
+  //   if (!nftData) return;
+  //   setLastAnswers((prev) => [...prev, nftData]);
+  // }, [nftData]);
 
   const handleGuess = async (username: string) => {
     if (currentRound > 10 && gameMode === gameModes.TIMER) {
@@ -288,7 +288,10 @@ export default function Home() {
     //     return;
     //   }
     // }
-
+    const nftAnswer = {
+      ...nftData,
+      correct: false,
+    };
     if (username === nftData.name) {
       toast.success(`Correct - ${nftData.name}`, {
         autoClose: 500,
@@ -312,6 +315,7 @@ export default function Home() {
       }
     }
 
+    setLastAnswers((prev) => [...prev, nftAnswer]);
     setRoundInProgress(false);
     await new Promise((resolve) => setTimeout(resolve, 500)); // Wait 0.5 seconds before requesting a new NFT
     requestNFT();
@@ -378,38 +382,6 @@ export default function Home() {
   function setDifficulty(diff: number) {
     setDefaultCount(diff);
   }
-
-  const shareScoreOnTwitter = () => {
-    const correct = `${answers.correct}`;
-    const incorrect = `${answers.incorrect}`;
-
-    const appLink = "https://pfpguessr.com";
-
-    const createdBy = "@R4vonus";
-
-    const diff =
-      defaultCount === 30
-        ? "Noob"
-        : defaultCount === 8
-        ? "Easy"
-        : defaultCount === 5
-        ? "Medium"
-        : "Hard";
-    let scoreText = "";
-
-    if (gameMode === gameModes.STREAK) {
-      scoreText = `I scored a streak of ${correct} CT influencers in DeCypher ${appLink}`;
-    }
-    if (gameMode === gameModes.TIMER) {
-      scoreText = `I guessed ${correct}/10 CT influencers in Decypher ${appLink} on ${diff} difficulty!`;
-    }
-
-    const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-      scoreText + `\n\n Created by ${createdBy}\n`
-    )}`;
-
-    window.open(tweetUrl);
-  };
 
   return (
     <>
@@ -652,16 +624,19 @@ export default function Home() {
             </>
           )}
           {gameStatus === "finished" && (
-            <button
-              className="-mt-8 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-              onClick={shareScoreOnTwitter}
-            >
-              Share on Twitter
-            </button>
+            <TwitterShare
+              answers={answers}
+              gameMode={gameMode}
+              defaultCount={defaultCount}
+              lastAnswers={lastAnswers}
+            />
           )}
           {(gameStatus === "notStarted" || gameStatus === "finished") && (
             <>
-              <div className="mx-auto grid grid-cols-2 justify-items-center gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+              <div
+                id="lastAnswers"
+                className="mx-auto grid grid-cols-2 justify-items-center gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
+              >
                 {lastAnswers.map((nft, i) => (
                   <img
                     src={nft?.image}
