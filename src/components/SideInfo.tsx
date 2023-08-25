@@ -7,7 +7,7 @@ import Link from "next/link";
 interface SideInfoProps {
   twitch: string | false | string[];
   gameStatus: string;
-  gameMode: string;
+  difficulty: number;
   setGameMode: (gameMode: string) => void;
   setDifficulty: (difficulty: number) => void;
 }
@@ -16,7 +16,7 @@ const communties = ["DeGods"];
 
 const SideInfo: FC<SideInfoProps> = ({
   gameStatus,
-  gameMode,
+  difficulty,
   setGameMode,
   twitch,
   setDifficulty,
@@ -79,7 +79,7 @@ const SideInfo: FC<SideInfoProps> = ({
             !twitch && (
               <select
                 defaultChecked
-                value="5"
+                value={difficulty}
                 className="m-1 block w-36 cursor-pointer rounded bg-gray-600 px-4 py-2 font-bold text-white shadow-xl transition duration-500 hover:bg-gray-700"
                 onChange={(e) => setDifficulty(parseInt(e.target.value))}
               >

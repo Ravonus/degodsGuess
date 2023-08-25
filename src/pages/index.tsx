@@ -453,7 +453,13 @@ export default function Home() {
         <meta name="twitter:image" content="https://pfpguessr.com/pfp2.png" />
       </Head>
       <Sidebar setOpen={setOpen} open={open}>
-       <SideInfo gameMode={gameMode} gameStatus={gameStatus} setDifficulty={setDifficulty} setGameMode={setGameMode} twitch={twitch} />
+        <SideInfo
+          difficulty={defaultCount}
+          gameStatus={gameStatus}
+          setDifficulty={setDifficulty}
+          setGameMode={setGameMode}
+          twitch={twitch}
+        />
       </Sidebar>
 
       <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#313131]  to-[#000]">
@@ -531,7 +537,7 @@ export default function Home() {
               />
             </>
           ) : (
-              <img
+            <img
               style={{ height: "400px", width: "400px" }}
               alt="NFT"
               src={nftData?.image}
@@ -673,7 +679,7 @@ export default function Home() {
               </div>
             </>
           )}
-          <Footer/>
+          <Footer />
         </div>
       </main>
     </>
