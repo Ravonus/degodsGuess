@@ -20,7 +20,7 @@ import TwitterShare from "~/components/TwitterShare";
 
 //change above to a record not interface
 
-type UserVotes = Record<string, boolean>;
+export type UserVotes = Record<string, boolean>;
 
 // add game modes
 export const gameModes = {
