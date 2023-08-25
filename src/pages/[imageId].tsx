@@ -420,14 +420,14 @@ const ImagePage: React.FC<ImagePageProps> = ({ imageUrl }) => {
 
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:image" content={imageUrl} />
-        <meta name="twitter:url" content="https://pfpguessr.com" />
+        <meta name="twitter:url" content="https://degods.pfpguessr.com" />
         <meta name="twitter:title" content={`Can you guess popular CT PFPs.`} />
         <meta
           name="twitter:description"
           content={`A fun game to guess Crypto Twitter PFPs.`}
         />
         <meta property="og:image" content={`${imageUrl}.png`} />
-        <meta property="og:url" content="https://pfpguessr.com" />
+        <meta property="og:url" content="https://degods.pfpguessr.com" />
         <meta property="og:title" content={`Can you guess popular CT PFPs.`} />
         <meta
           property="og:description"

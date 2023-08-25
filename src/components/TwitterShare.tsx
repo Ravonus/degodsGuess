@@ -92,7 +92,7 @@ const TwitterShare: FC<TwitterShareProps> = ({
     const correct = `${answers.correct}`;
     const incorrect = `${answers.incorrect}`;
 
-    const appLink = `https://pfpguessr.com/${id || ""}`;
+    const appLink = `https://degods.pfpguessr.com/${id || ""}`;
 
     const createdBy = "@R4vonus";
 
