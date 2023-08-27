@@ -658,8 +658,9 @@ const ImagePage: React.FC<ImagePageProps> = ({ imageUrl }) => {
 
 export default ImagePage;
 
-// Your logic to get the image URL by ID
 export const getImageUrlById = (imageId: string): string => {
+  // Replace with the actual logic to get the image URL
+  return `https://res.cloudinary.com/doaxhxkmq/image/upload/v1692002576/${imageId}`;
 };
 
 export const getServerSideProps: GetServerSideProps<ImagePageProps> = async (
