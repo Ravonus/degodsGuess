@@ -92,7 +92,7 @@ const TwitterShare: FC<TwitterShareProps> = ({
     const correct = `${answers.correct}`;
     const incorrect = `${answers.incorrect}`;
 
-    const appLink = `https://degods.pfpguessr.com/${id || ""}`;
+    const appLink = `https://apes.pfpguessr.com/${id || ""}`;
 
     const createdBy = "@R4vonus";
 
@@ -107,10 +107,10 @@ const TwitterShare: FC<TwitterShareProps> = ({
     let scoreText = "";
 
     if (gameMode === gameModes.STREAK) {
-      scoreText = `I scored a streak of ${correct} DeGods influencers in PFPGuessr`;
+      scoreText = `I scored a streak of ${correct} Apes influencers in PFPGuessr`;
     }
     if (gameMode === gameModes.TIMER) {
-      scoreText = `I guessed ${correct}/10 CT DeGods in PFPGuessr on ${diff} difficulty!`;
+      scoreText = `I guessed ${correct}/10 CT Apes in PFPGuessr on ${diff} difficulty!`;
     }
 
     //find one incorrect answer
