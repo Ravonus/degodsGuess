@@ -569,7 +569,7 @@ const ImagePage: React.FC<ImagePageProps> = ({ imageUrl }) => {
           {!nftData?.image ? (
             <ImageComponent imageId={imageId} />
           ) : (
-              <img
+            <img
               onLoad={() => setImageLoaded(true)}
               style={{ height: "400px", width: "400px" }}
               alt="NFT"
@@ -694,6 +694,11 @@ const ImagePage: React.FC<ImagePageProps> = ({ imageUrl }) => {
           )}
           {(gameStatus === "notStarted" || gameStatus === "finished") && (
             <>
+              {lastAnswers.length > 0 && (
+                <span className="text-white ">
+                  {`#ApeFollowApe - Didn't recognize a fellow Ape. Just click on the image below to go to their X Profile.`}{" "}
+                </span>
+              )}
               <div
                 id="lastAnswers"
                 className="mx-auto grid grid-cols-2 justify-items-center gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"

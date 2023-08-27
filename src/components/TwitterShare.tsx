@@ -142,7 +142,7 @@ const TwitterShare: FC<TwitterShareProps> = ({
         shareScoreOnTwitter().catch((err) => console.log(err));
       }}
     >
-      Share on Twitter
+      Share on X
     </button>
   );
 };

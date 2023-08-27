@@ -641,8 +641,8 @@ export default function Home() {
               />
             </>
           ) : (
-              <img
-              onLoad={()=> setImageLoaded(true)}
+            <img
+              onLoad={() => setImageLoaded(true)}
               alt="NFT"
               src={nftData?.image}
               className="rounded rounded-full border-2 border-gray-500 shadow-xl transition duration-500 hover:scale-110 hover:border-gray-600"
@@ -765,6 +765,11 @@ export default function Home() {
           )}
           {(gameStatus === "notStarted" || gameStatus === "finished") && (
             <>
+              {lastAnswers.length > 0 && (
+                <span className='text-white '>
+                  {`#ApeFollowApe - Didn't recognize a fellow Ape. Just click on the image below to go to their X Profile.`}{" "}
+                </span>
+              )}
               <div
                 id="lastAnswers"
                 className="mx-auto grid grid-cols-2 justify-items-center gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
