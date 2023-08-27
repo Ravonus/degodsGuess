@@ -73,6 +73,8 @@ const ImagePage: React.FC<ImagePageProps> = ({ imageUrl }) => {
   const [bayc, setBayc] = useState(true);
   const [mayc, setMayc] = useState(true);
 
+  const [imageLoaded, setImageLoaded] = useState(false);
+
   //get id of image (url param)
 
   const splitUrl = imageUrl.split("/");
@@ -120,6 +122,14 @@ const ImagePage: React.FC<ImagePageProps> = ({ imageUrl }) => {
     //   socket?.disconnect();
     // };
   }, [twitch]);
+
+  
+  useEffect(() => {
+    setTimeout(() => {
+      setCountdown(defaultCount);
+    }, 500);
+  }, [imageLoaded]);
+
 
   useEffect(() => {
     //first remvoe listener
@@ -396,7 +406,8 @@ const ImagePage: React.FC<ImagePageProps> = ({ imageUrl }) => {
   }
 
   function requestNFT() {
-    setCountdown(defaultCount);
+  //  setCountdown(defaultCount);
+    setImageLoaded(false);
     if (gameStatus !== "inProgress") return;
 
     setShouldStartCountdown(false);
@@ -558,7 +569,8 @@ const ImagePage: React.FC<ImagePageProps> = ({ imageUrl }) => {
           {!nftData?.image ? (
             <ImageComponent imageId={imageId} />
           ) : (
-            <img
+              <img
+              onLoad={() => setImageLoaded(true)}
               style={{ height: "400px", width: "400px" }}
               alt="NFT"
               src={nftData?.image}

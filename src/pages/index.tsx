@@ -70,6 +70,8 @@ export default function Home() {
   const [azukiWidth, setAzukiWidth] = useState(100);
   const [elementalWidth, setElementalWidth] = useState(100);
 
+  const [imageLoaded, setImageLoaded] = useState(false);
+
   // const [socket, setSocket] = useState<Socket>();
 
   const router = useRouter();
@@ -253,6 +255,12 @@ export default function Home() {
     setRestart(false);
   }, [restart]);
 
+  useEffect(() => {
+    setTimeout(() => {
+      setCountdown(defaultCount);
+    }, 500);
+  }, [imageLoaded]);
+
   // useEffect(() => {
   //   if (!nftData) return;
   //   const nftAnswer = {
@@ -424,7 +432,8 @@ export default function Home() {
   }
 
   function requestNFT() {
-    setCountdown(defaultCount);
+    //setCountdown(defaultCount);
+    setImageLoaded(false);
     if (gameStatus !== "inProgress") return;
 
     setShouldStartCountdown(false);
@@ -632,7 +641,8 @@ export default function Home() {
               />
             </>
           ) : (
-            <img
+              <img
+              onLoad={()=> setImageLoaded(true)}
               alt="NFT"
               src={nftData?.image}
               className="rounded rounded-full border-2 border-gray-500 shadow-xl transition duration-500 hover:scale-110 hover:border-gray-600"
