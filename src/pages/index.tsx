@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 
@@ -14,7 +14,7 @@ import Sidebar from "~/components/Sidebar";
 import { CogIcon } from "@heroicons/react/24/outline";
 import SideInfo from "~/components/SideInfo";
 import Footer from "~/components/Footer";
-import TwitterShare from '~/components/TwitterShare';
+import TwitterShare from "~/components/TwitterShare";
 
 //their name needs to be the record to the object
 
@@ -35,7 +35,6 @@ export interface Data {
   name: string;
   correct?: boolean;
 }
-
 
 export default function Home() {
   const [nftData, setNftData] = useState<Data>();
@@ -80,6 +79,122 @@ export default function Home() {
 
   const twitch = router.query.twitch ? router.query.twitch : false;
 
+  const requestNFT = useCallback(() => {
+    //setCountdown(defaultCount);
+
+    // if (roundInProgress) return;
+    // setRoundInProgress(true);
+    setImageLoaded(false);
+    if (gameStatus !== "inProgress") return;
+
+    setShouldStartCountdown(false);
+    if (
+      (currentRound < 10 && gameMode === gameModes.TIMER) ||
+      gameMode === gameModes.STREAK
+    ) {
+      setCurrentRound((prevRound) => prevRound + 1);
+    } else if (gameMode === gameModes.TIMER) {
+      setGameStatus("finished");
+      setCountdown(0);
+      toast.success("Game finished!");
+      setShouldStartCountdown(false);
+      setRoundInProgress(false);
+
+      //set nftData.data undefined
+
+      setNftData(undefined);
+    }
+  }, [
+    currentRound,
+    gameMode,
+    gameStatus,
+    roundInProgress,
+    twitch,
+    defaultCount,
+    lastIncorrect,
+    lastAnswers,
+    multipleChoice,
+    answers,
+    userVotes,
+    azukiVotes,
+    elementalVotes,
+    bayc,
+    mayc,
+    azukiWidth,
+    elementalWidth,
+    imageLoaded,
+    nftData,
+  ]);
+  // async function randomDeGod(noCheck = false): Promise<Data> {
+  const randomDeGod = useCallback(
+    async (noCheck = false): Promise<Data> => {
+      let count: number | undefined;
+
+      switch (defaultCount) {
+        case 3:
+          count = undefined;
+          break;
+        case 5:
+          count = 150;
+          break;
+        default:
+          count = 75;
+          break;
+      }
+
+      let data: Data[] = [];
+
+      if (bayc && mayc) {
+        //we gotta combine them one at a time so the ranking of each collection is still orders so loop through each one picking a new one from each > until one is empty adn then add the rest of the other one
+
+        let i = 0;
+        let j = 0;
+
+        while (i < dataB.length && j < dataM.length) {
+          data.push(dataB[i] as unknown as Data);
+          data.push(dataM[j] as unknown as Data);
+          i++;
+          j++;
+        }
+
+        while (i < dataB.length) {
+          data.push(dataB[i] as unknown as Data);
+          i++;
+        }
+
+        while (j < dataM.length) {
+          data.push(dataM[j] as unknown as Data);
+          j++;
+        }
+      } else if (bayc) {
+        data = [...dataB];
+      } else if (mayc) {
+        data = [...dataM];
+      }
+
+      const num = count !== undefined ? Number(count) : data.length;
+
+      let god: Data;
+      if (!noCheck) {
+        let foundGod: boolean;
+        do {
+          god = data[Math.floor(Math.random() * num)] as unknown as Data;
+          foundGod = lastAnswers.some((answer) => answer.name === god.name);
+
+          if (foundGod) {
+            await new Promise((resolve) => setTimeout(resolve, 0)); // wait for next event loop
+          }
+        } while (foundGod);
+      } else {
+        god = data[Math.floor(Math.random() * num)] as unknown as Data;
+      }
+
+      return god;
+    },
+
+    [bayc, defaultCount, lastAnswers, mayc]
+  );
+
   useEffect(() => {
     const totalVotes = azukiVotes + elementalVotes;
     setAzukiWidth(totalVotes > 0 ? (azukiVotes / totalVotes) * 100 : 0);
@@ -103,108 +218,48 @@ export default function Home() {
       setDefaultCount(20);
     }
     setShouldStartCountdown(true);
-
-    // Connect to the Socket.IO server
-    // setSocket(
-    //   io(process.env.NEXT_PUBLIC_SOCKET as string, {
-    //     query: { twitch: twitch },
-    //   })
-    // );
-
-    // Handle the 'chat message' event
-
-    // Disconnect when the component unmounts
-    // return () => {
-    //   socket?.disconnect();
-    // };
   }, [twitch]);
 
   useEffect(() => {
     //first remvoe listener
 
     if (gameStatus !== "inProgress") return;
-
-    //socket?.off(twitch as string);
-
-    // socket?.on(twitch as string, (msg: { user: string; isAzuki: boolean }) => {
-    //   //if user has already voted change it, if not add it
-    //   //we need to check if userVotes[msg.user] exists (Not if its true or false)
-
-    //   if (userVotes[msg.user] !== undefined) {
-    //     if (userVotes[msg.user] === msg.isAzuki) {
-    //       //if they voted the same, do nothing
-    //       return;
-    //     } else {
-    //       //if they voted different, change it
-    //       setUserVotes((prev) => ({ ...prev, [msg.user]: msg.isAzuki }));
-    //       if (msg.isAzuki) {
-    //         setAzukiVotes((prev) => prev + 1);
-    //         setElementalVotes((prev) => prev - 1);
-    //       } else {
-    //         setAzukiVotes((prev) => prev - 1);
-    //         setElementalVotes((prev) => prev + 1);
-    //       }
-    //     }
-    //   } else {
-    //     //if they haven't voted, add it
-    //     setUserVotes((prev) => ({ ...prev, [msg.user]: msg.isAzuki }));
-    //     if (msg.isAzuki) setAzukiVotes((prev) => prev + 1);
-    //     else setElementalVotes((prev) => prev + 1);
-    //   }
-
-    //   toast.success(
-    //     `${msg.user} voted for ${msg.isAzuki ? "Azuki" : "Elemental"}`
-    //   );
-    // });
   }, [userVotes, gameStatus]);
+
+  useEffect(() => {
+    let countdownTimer: NodeJS.Timeout;
+    if (
+      gameStatus === "inProgress" &&
+      !twitch &&
+      gameMode !== gameModes.STREAK
+    ) {
+      countdownTimer = setInterval(() => {
+        setRoundInProgress(true);
+        setCountdown((prevCountdown) => {
+          if (prevCountdown === 0) {
+            clearInterval(countdownTimer);
+            return 0;
+          }
+          return prevCountdown - 1;
+        });
+      }, 1000);
+    }
+    return () => {
+      clearInterval(countdownTimer);
+    };
+  }, [gameMode, gameStatus, twitch]);
 
   useEffect(() => {
     if (gameStatus !== "inProgress") return;
 
-    if (gameMode === gameModes.STREAK && !twitch) return;
-
-    let countdownTimer: NodeJS.Timeout;
-
-    if (countdown > 0 && shouldStartCountdown) {
-      countdownTimer = setTimeout(() => {
-        setCountdown((prevCountdown) => prevCountdown - 1);
-      }, 1000);
-    } else if (countdown < 1 && shouldStartCountdown && !roundInProgress) {
-      // Timeout expired, request a new NFT
+    if (countdown < 1 && shouldStartCountdown && roundInProgress) {
 
       setAnswers((prev) => ({ ...prev, incorrect: prev.incorrect + 1 }));
-
+      setShouldStartCountdown(false);
+      setRoundInProgress(false);
       requestNFT();
-      setShouldStartCountdown(false); // Prevent the countdown from starting automatically
     }
-
-    return () => {
-      clearTimeout(countdownTimer);
-    };
-  }, [
-    twitch,
-    countdown,
-    shouldStartCountdown,
-    defaultCount,
-    gameMode,
-    roundInProgress,
-  ]);
-
-  // if (nft.isIdle && !nftData) {
-  //   nft
-  //     .mutateAsync()
-  //     .then((data) => {
-  //       setNftData(data);
-
-  //       setTimeout(() => {
-  //         // Only 5 seconds to guess
-  //         //   setCountdown(defaultCount);
-  //       }, 5000);
-  //     })
-  //     .catch((err) => {
-  //       console.log(err);
-  //     });
-  // }
+  }, [gameStatus, countdown, shouldStartCountdown, roundInProgress, requestNFT]);
 
   useEffect(() => {
     if (currentRound === 0) {
@@ -248,53 +303,19 @@ export default function Home() {
       setMultipleChoice(randomGods); // Update the multiple choice with shuffled options
       setNftData(selectedGod); // Set the correct answer
     })().catch(console.error);
-  }, [currentRound]);
+  }, [currentRound, defaultCount, randomDeGod]);
 
   useEffect(() => {
     if (restart) requestNFT();
     setRestart(false);
-  }, [restart]);
+  }, [restart, requestNFT]);
 
   useEffect(() => {
-    setTimeout(() => {
       setCountdown(defaultCount);
-    }, 500);
-  }, [imageLoaded]);
+  }, [imageLoaded, defaultCount]);
 
-  // useEffect(() => {
-  //   if (!nftData) return;
-  //   const nftAnswer = {
-  //     ...nftData,
-  //     correct: nftData.name === lastIncorrect,
-  //   };
-  //   setLastAnswers((prev) => [...prev, nftAnswer]);
-  // }, [nftData, lastIncorrect]);
-
-  const convertDivToPNG = async () => {
-    const divElement = document.querySelector("#lastAnswers"); // Select the div by its class
-
-    //add gradient bg
-
-    divElement?.classList.add(
-      "bg-gradient-to-b",
-      "from-[#313131]",
-      "to-[#000]"
-    );
-
-    // Convert div to canvas
-    const canvas = await html2canvas(divElement as HTMLElement, {
-      useCORS: true, // This is important if images are coming from external sources
-      scale: 1, // Adjust as needed
-    });
-
-    // Convert canvas to PNG and download it
-    const link = document.createElement("a");
-    link.download = "divAsImage.png";
-    link.href = canvas.toDataURL();
-    link.click();
-  };
-
-  const handleGuess = async (username: string) => {
+  const handleGuess = (username: string) => {
+    console.log("handle guess", currentRound, gameMode)
     if (currentRound > 10 && gameMode === gameModes.TIMER) {
       setGameStatus("finished");
       setCountdown(0);
@@ -304,29 +325,8 @@ export default function Home() {
       return;
     }
     if (!nftData) return;
-    if (roundInProgress) return; // Prevent multiple guesses in the same round
+  
     setRoundInProgress(true); // Start a round
-    // if (nftData.contract === collection) {
-    //   toast.success("Correct!", {
-    //     autoClose: 500,
-    //   });
-    //   setAnswers((prev) => ({ ...prev, correct: prev.correct + 1 }));
-    // } else {
-    //   toast.error("Nope!", {
-    //     autoClose: 500,
-    //   });
-    //   setAnswers((prev) => ({ ...prev, incorrect: prev.incorrect + 1 }));
-    //   setLastIncorrect(nftData.image);
-
-    //   // If game mode is STREAK and the answer is incorrect, finish the game
-    //   if (gameMode === gameModes.STREAK) {
-    //     setGameStatus("finished");
-    //     setCountdown(0);
-    //     toast.success("Game finished!");
-    //     setNftData(undefined);
-    //     return;
-    //   }
-    // }
 
     const nftAnswer = {
       ...nftData,
@@ -360,144 +360,17 @@ export default function Home() {
     }
     setLastAnswers((prev) => [...prev, nftAnswer]);
     setRoundInProgress(false);
-    await new Promise((resolve) => setTimeout(resolve, 500)); // Wait 0.5 seconds before requesting a new NFT
-    requestNFT();
-  };
-
-  async function randomDeGod(noCheck = false): Promise<Data> {
-    let count: number | undefined;
-
-    switch (defaultCount) {
-      case 3:
-        count = undefined;
-        break;
-      case 5:
-        count = 150;
-        break;
-      default:
-        count = 75;
-        break;
-    }
-
-    let data:Data[] = [];
-
-    if (bayc && mayc) {
-      //we gotta combine them one at a time so the ranking of each collection is still orders so loop through each one picking a new one from each > until one is empty adn then add the rest of the other one
-
-      let i = 0;
-      let j = 0;
-
-      while (i < dataB.length && j < dataM.length) {
-        data.push(dataB[i] as unknown as Data);
-        data.push(dataM[j] as unknown as Data);
-        i++;
-        j++;
-      }
-
-      while (i < dataB.length) {
-        data.push(dataB[i] as unknown as Data);
-        i++;
-      }
-
-      while (j < dataM.length) {
-        data.push(dataM[j] as unknown as Data);
-        j++;
-      }
-
-
-    } else if (bayc) {
-      data = [...dataB];
-    } else if (mayc) {
-      data = [...dataM];
-    }
-
-    const num = count !== undefined ? Number(count) : data.length;
-
-    let god: Data;
-    if (!noCheck) {
-      let foundGod: boolean;
-      do {
-        god = data[Math.floor(Math.random() * num)] as unknown as Data;
-        foundGod = lastAnswers.some((answer) => answer.name === god.name);
-
-        if (foundGod) {
-          await new Promise((resolve) => setTimeout(resolve, 0)); // wait for next event loop
-        }
-      } while (foundGod);
-    } else {
-      god = data[Math.floor(Math.random() * num)] as unknown as Data;
-    }
-
-    return god;
-  }
-
-  function requestNFT() {
-    //setCountdown(defaultCount);
-    setImageLoaded(false);
-    if (gameStatus !== "inProgress") return;
-
     setShouldStartCountdown(false);
-    if (
-      (currentRound < 10 && gameMode === gameModes.TIMER) ||
-      gameMode === gameModes.STREAK
-    ) {
-      setCurrentRound((prevRound) => prevRound + 1);
-    } else if (gameMode === gameModes.TIMER) {
-      setGameStatus("finished");
-      setCountdown(0);
-      toast.success("Game finished!");
-      setShouldStartCountdown(false);
-      setRoundInProgress(false);
-
-      //set nftData.data undefined
-
-      setNftData(undefined);
-    }
-  }
+    setCurrentRound((prev) => prev + 1);
+    setCountdown(0);
+    setImageLoaded(false);
+   /// await new Promise((resolve) => setTimeout(resolve, 500)); // Wait 0.5 seconds before requesting a new NFT
+   // requestNFT();
+  };
 
   function setDifficulty(diff: number) {
     setDefaultCount(diff);
   }
-
-  const shareScoreOnTwitter = () => {
-    convertDivToPNG().catch(console.error);
-    const correct = `${answers.correct}`;
-    const incorrect = `${answers.incorrect}`;
-
-    const appLink = "https://pfpguessr.com";
-
-    const createdBy = "@R4vonus";
-
-    // <option value="30">Noob</option>
-    // <option value="8">Easy</option>
-    // <option defaultChecked value="5">
-    //   Medium
-    // </option>
-    // <option value="3">Hard</option>
-
-    const diff =
-      defaultCount === 30
-        ? "Noob"
-        : defaultCount === 8
-        ? "Easy"
-        : defaultCount === 5
-        ? "Medium"
-        : "Hard";
-    let scoreText = "";
-
-    if (gameMode === gameModes.STREAK) {
-      scoreText = `I scored a streak of ${correct} in DeCypher ${appLink}`;
-    }
-    if (gameMode === gameModes.TIMER) {
-      scoreText = `I scored ${correct}/10 in Decypher ${appLink} on ${diff} difficulty!`;
-    }
-
-    const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-      scoreText + `\n\n Created by ${createdBy}\n`
-    )}`;
-
-    window.open(tweetUrl);
-  };
 
   return (
     <>
@@ -731,7 +604,8 @@ export default function Home() {
                       key={nft.name}
                       className="mx-3 my-1  rounded bg-gray-600 p-1 text-center font-bold text-white shadow-xl transition duration-500 hover:scale-110 hover:bg-gray-700"
                       onClick={() => {
-                        handleGuess(nft.name).catch(console.error);
+                        if (countdown > 0 && imageLoaded)
+                          handleGuess(nft.name)
                       }}
                     >
                       {nft.name}
@@ -766,7 +640,7 @@ export default function Home() {
           {(gameStatus === "notStarted" || gameStatus === "finished") && (
             <>
               {lastAnswers.length > 0 && (
-                <span className='text-white '>
+                <span className="text-white ">
                   {`#ApeFollowApe - Didn't recognize a fellow Ape. Just click on the image below to go to their X Profile.`}{" "}
                 </span>
               )}
