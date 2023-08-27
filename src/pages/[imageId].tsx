@@ -1,7 +1,7 @@
 import { type GetServerSideProps } from "next";
 import Head from "next/head";
 
-import { ReactElement, useEffect, useState } from "react";
+import { ReactElement, useCallback, useEffect, useState } from "react";
 import Footer from "~/components/Footer";
 
 import data from "~/../public/data.json";
@@ -66,6 +66,8 @@ const ImagePage: React.FC<ImagePageProps> = ({ imageUrl }) => {
 
   const [lastAnswers, setLastAnswers] = useState<Data[]>([]);
 
+  const [imageLoaded, setImageLoaded] = useState(false);
+
   const [azukiWidth, setAzukiWidth] = useState(100);
   const [elementalWidth, setElementalWidth] = useState(100);
 
@@ -78,341 +80,275 @@ const ImagePage: React.FC<ImagePageProps> = ({ imageUrl }) => {
 
   const twitch = router.query.twitch ? router.query.twitch : false;
 
-  useEffect(() => {
-    const totalVotes = azukiVotes + elementalVotes;
-    setAzukiWidth(totalVotes > 0 ? (azukiVotes / totalVotes) * 100 : 0);
-    setElementalWidth(totalVotes > 0 ? (elementalVotes / totalVotes) * 100 : 0);
-  }, [azukiVotes, elementalVotes]);
+    const requestNFT = useCallback(() => {
+      //setCountdown(defaultCount);
 
-  useEffect(() => {
-    if (twitch) return;
-    setDefaultCount(5);
-    setCountdown(5);
-    setShouldStartCountdown(true);
-    setGameStatus("notStarted");
-  }, [gameMode, twitch]);
+      // if (roundInProgress) return;
+      // setRoundInProgress(true);
+      setImageLoaded(false);
+      if (gameStatus !== "inProgress") return;
 
-  useEffect(() => {
-    if (!twitch) {
-      setCountdown(5);
-      setDefaultCount(5);
-    } else {
-      setCountdown(20);
-      setDefaultCount(20);
-    }
-    setShouldStartCountdown(true);
-
-    // Connect to the Socket.IO server
-    // setSocket(
-    //   io(process.env.NEXT_PUBLIC_SOCKET as string, {
-    //     query: { twitch: twitch },
-    //   })
-    // );
-
-    // Handle the 'chat message' event
-
-    // Disconnect when the component unmounts
-    // return () => {
-    //   socket?.disconnect();
-    // };
-  }, [twitch]);
-
-  useEffect(() => {
-    //first remvoe listener
-
-    if (gameStatus !== "inProgress") return;
-
-    //socket?.off(twitch as string);
-
-    // socket?.on(twitch as string, (msg: { user: string; isAzuki: boolean }) => {
-    //   //if user has already voted change it, if not add it
-    //   //we need to check if userVotes[msg.user] exists (Not if its true or false)
-
-    //   if (userVotes[msg.user] !== undefined) {
-    //     if (userVotes[msg.user] === msg.isAzuki) {
-    //       //if they voted the same, do nothing
-    //       return;
-    //     } else {
-    //       //if they voted different, change it
-    //       setUserVotes((prev) => ({ ...prev, [msg.user]: msg.isAzuki }));
-    //       if (msg.isAzuki) {
-    //         setAzukiVotes((prev) => prev + 1);
-    //         setElementalVotes((prev) => prev - 1);
-    //       } else {
-    //         setAzukiVotes((prev) => prev - 1);
-    //         setElementalVotes((prev) => prev + 1);
-    //       }
-    //     }
-    //   } else {
-    //     //if they haven't voted, add it
-    //     setUserVotes((prev) => ({ ...prev, [msg.user]: msg.isAzuki }));
-    //     if (msg.isAzuki) setAzukiVotes((prev) => prev + 1);
-    //     else setElementalVotes((prev) => prev + 1);
-    //   }
-
-    //   toast.success(
-    //     `${msg.user} voted for ${msg.isAzuki ? "Azuki" : "Elemental"}`
-    //   );
-    // });
-  }, [userVotes, gameStatus]);
-
-  useEffect(() => {
-    if (gameStatus !== "inProgress") return;
-
-    if (gameMode === gameModes.STREAK && !twitch) return;
-
-    let countdownTimer: NodeJS.Timeout;
-
-    if (countdown > 0 && shouldStartCountdown) {
-      countdownTimer = setTimeout(() => {
-        setCountdown((prevCountdown) => prevCountdown - 1);
-      }, 1000);
-    } else if (countdown < 1 && shouldStartCountdown && !roundInProgress) {
-      // Timeout expired, request a new NFT
-
-      setAnswers((prev) => ({ ...prev, incorrect: prev.incorrect + 1 }));
-
-      requestNFT();
-      setShouldStartCountdown(false); // Prevent the countdown from starting automatically
-    }
-
-    return () => {
-      clearTimeout(countdownTimer);
-    };
-  }, [
-    twitch,
-    countdown,
-    shouldStartCountdown,
-    defaultCount,
-    gameMode,
-    roundInProgress,
-  ]);
-
-  // if (nft.isIdle && !nftData) {
-  //   nft
-  //     .mutateAsync()
-  //     .then((data) => {
-  //       setNftData(data);
-
-  //       setTimeout(() => {
-  //         // Only 5 seconds to guess
-  //         //   setCountdown(defaultCount);
-  //       }, 5000);
-  //     })
-  //     .catch((err) => {
-  //       console.log(err);
-  //     });
-  // }
-
-  useEffect(() => {
-    if (currentRound === 0) {
-      //   setLastAnswers([]);
-      return;
-    }
-    (async () => {
-      setShouldStartCountdown(true);
-
-      // Get random gods for multiple choice without checking previous answers
-      const godOne = await randomDeGod(true);
-      const godTwo = await randomDeGod(true);
-      const godThree = await randomDeGod(true);
-      const godFour = await randomDeGod(true);
-
-      let randomGods: Data[] = [];
-      switch (defaultCount) {
-        case 3:
-          randomGods = [godOne, godTwo, godThree, godFour];
-          break;
-        case 5:
-          randomGods = [godOne, godTwo, godThree];
-          break;
-        default:
-          randomGods = [godOne, godTwo];
-          break;
-      }
-
-      setMultipleChoice(randomGods);
-
-      // Get a distinct right answer, ensuring it's not already present in multiple choice
-      let selectedGod: Data;
-      do {
-        selectedGod = await randomDeGod();
-      } while (randomGods.some((god) => god.name === selectedGod.name));
-
-      // Shuffle randomGods and replace one random element with the right answer
-      const selectedIndex = Math.floor(Math.random() * randomGods.length);
-      randomGods[selectedIndex] = selectedGod;
-
-      setMultipleChoice(randomGods); // Update the multiple choice with shuffled options
-      setNftData(selectedGod); // Set the correct answer
-    })().catch(console.error);
-  }, [currentRound]);
-
-  useEffect(() => {
-    if (restart) requestNFT();
-    setRestart(false);
-  }, [restart]);
-
-  // useEffect(() => {
-  //   if (!nftData) return;
-  //   setLastAnswers((prev) => [...prev, nftData]);
-  // }, [nftData]);
-
-
-
-  const handleGuess = async (username: string) => {
-    if (currentRound > 10 && gameMode === gameModes.TIMER) {
-      setGameStatus("finished");
-      setCountdown(0);
       setShouldStartCountdown(false);
-      setCurrentRound(0);
-
-      return;
-    }
-    if (!nftData) return;
-    if (roundInProgress) return; // Prevent multiple guesses in the same round
-    setRoundInProgress(true); // Start a round
-    // if (nftData.contract === collection) {
-    //   toast.success("Correct!", {
-    //     autoClose: 500,
-    //   });
-    //   setAnswers((prev) => ({ ...prev, correct: prev.correct + 1 }));
-    // } else {
-    //   toast.error("Nope!", {
-    //     autoClose: 500,
-    //   });
-    //   setAnswers((prev) => ({ ...prev, incorrect: prev.incorrect + 1 }));
-    //   setLastIncorrect(nftData.image);
-
-    //   // If game mode is STREAK and the answer is incorrect, finish the game
-    //   if (gameMode === gameModes.STREAK) {
-    //     setGameStatus("finished");
-    //     setCountdown(0);
-    //     toast.success("Game finished!");
-    //     setNftData(undefined);
-    //     return;
-    //   }
-    // }
-
-    const nftAnswer = {
-      ...nftData,
-      correct: false,
-    };
-    if (username === nftData.name) {
-      nftAnswer.correct = true;
-      toast.success(`Correct - ${nftData.name}`, {
-        autoClose: 500,
-      });
-
-      setAnswers((prev) => ({ ...prev, correct: prev.correct + 1 }));
-    } else {
-      toast.error(nftData.name, {
-        autoClose: 500,
-      });
-      setAnswers((prev) => ({ ...prev, incorrect: prev.incorrect + 1 }));
-      setLastIncorrect(nftData.image);
-
-      // If game mode is STREAK and the answer is incorrect, finish the game
-      if (gameMode === gameModes.STREAK) {
+      if (
+        (currentRound < 10 && gameMode === gameModes.TIMER) ||
+        gameMode === gameModes.STREAK
+      ) {
+        setCurrentRound((prevRound) => prevRound + 1);
+      } else if (gameMode === gameModes.TIMER) {
         setGameStatus("finished");
         setCountdown(0);
         toast.success("Game finished!");
+        setShouldStartCountdown(false);
+        setRoundInProgress(false);
+
+        //set nftData.data undefined
+
         setNftData(undefined);
+      }
+    }, [
+      currentRound,
+      gameMode,
+      gameStatus,
+      roundInProgress,
+      twitch,
+      defaultCount,
+      lastIncorrect,
+      lastAnswers,
+      multipleChoice,
+      answers,
+      userVotes,
+      azukiVotes,
+      elementalVotes,
+      azukiWidth,
+      elementalWidth,
+      imageLoaded,
+      nftData,
+    ]);
+    // async function randomDeGod(noCheck = false): Promise<Data> {
+    const randomDeGod = useCallback(
+      async (noCheck = false): Promise<Data> => {
+        let count: number | undefined;
+
+        switch (defaultCount) {
+          case 3:
+            count = undefined;
+            break;
+          case 5:
+            count = 150;
+            break;
+          default:
+            count = 75;
+            break;
+        }
+
+        const num = count !== undefined ? Number(count) : data.length;
+
+        let god: Data;
+        if (!noCheck) {
+          let foundGod: boolean;
+          do {
+            god = data[Math.floor(Math.random() * num)] as unknown as Data;
+            foundGod = lastAnswers.some((answer) => answer.name === god.name);
+
+            if (foundGod) {
+              await new Promise((resolve) => setTimeout(resolve, 0)); // wait for next event loop
+            }
+          } while (foundGod);
+        } else {
+          god = data[Math.floor(Math.random() * num)] as unknown as Data;
+        }
+
+        return god;
+      },
+
+      [defaultCount, lastAnswers]
+    );
+
+    useEffect(() => {
+      const totalVotes = azukiVotes + elementalVotes;
+      setAzukiWidth(totalVotes > 0 ? (azukiVotes / totalVotes) * 100 : 0);
+      setElementalWidth(
+        totalVotes > 0 ? (elementalVotes / totalVotes) * 100 : 0
+      );
+    }, [azukiVotes, elementalVotes]);
+
+    useEffect(() => {
+      if (twitch) return;
+      setDefaultCount(5);
+      setCountdown(5);
+      setShouldStartCountdown(true);
+      setGameStatus("notStarted");
+    }, [gameMode, twitch]);
+
+    useEffect(() => {
+      if (!twitch) {
+        setCountdown(5);
+        setDefaultCount(5);
+      } else {
+        setCountdown(20);
+        setDefaultCount(20);
+      }
+      setShouldStartCountdown(true);
+    }, [twitch]);
+
+    useEffect(() => {
+      //first remvoe listener
+
+      if (gameStatus !== "inProgress") return;
+    }, [userVotes, gameStatus]);
+
+    useEffect(() => {
+      let countdownTimer: NodeJS.Timeout;
+      if (
+        gameStatus === "inProgress" &&
+        !twitch &&
+        gameMode !== gameModes.STREAK
+      ) {
+        countdownTimer = setInterval(() => {
+          setRoundInProgress(true);
+          setCountdown((prevCountdown) => {
+            if (prevCountdown === 0) {
+              clearInterval(countdownTimer);
+              return 0;
+            }
+            return prevCountdown - 1;
+          });
+        }, 1000);
+      }
+      return () => {
+        clearInterval(countdownTimer);
+      };
+    }, [gameMode, gameStatus, twitch]);
+
+    useEffect(() => {
+      if (gameStatus !== "inProgress") return;
+
+      if (countdown < 1 && shouldStartCountdown && roundInProgress) {
+        setAnswers((prev) => ({ ...prev, incorrect: prev.incorrect + 1 }));
+        setShouldStartCountdown(false);
+        setRoundInProgress(false);
+        requestNFT();
+      }
+    }, [
+      gameStatus,
+      countdown,
+      shouldStartCountdown,
+      roundInProgress,
+      requestNFT,
+    ]);
+
+    useEffect(() => {
+      if (currentRound === 0) {
+        //   setLastAnswers([]);
         return;
       }
-    }
+      (async () => {
+        setShouldStartCountdown(true);
 
-    setLastAnswers((prev) => [...prev, nftAnswer]);
-    setRoundInProgress(false);
-    await new Promise((resolve) => setTimeout(resolve, 500)); // Wait 0.5 seconds before requesting a new NFT
-    requestNFT();
-  };
+        // Get random gods for multiple choice without checking previous answers
+        const godOne = await randomDeGod(true);
+        const godTwo = await randomDeGod(true);
+        const godThree = await randomDeGod(true);
+        const godFour = await randomDeGod(true);
 
-  async function randomDeGod(noCheck = false): Promise<Data> {
-    let count: number | undefined;
-
-    switch (defaultCount) {
-      case 3:
-        count = undefined;
-        break;
-      case 5:
-        count = 150;
-        break;
-      default:
-        count = 75;
-        break;
-    }
-
-    const num = count !== undefined ? Number(count) : data.length;
-
-    let god: Data;
-    if (!noCheck) {
-      let foundGod: boolean;
-      do {
-        god = data[Math.floor(Math.random() * num)] as unknown as Data;
-        foundGod = lastAnswers.some((answer) => answer.name === god.name);
-
-        if (foundGod) {
-          await new Promise((resolve) => setTimeout(resolve, 0)); // wait for next event loop
+        let randomGods: Data[] = [];
+        switch (defaultCount) {
+          case 3:
+            randomGods = [godOne, godTwo, godThree, godFour];
+            break;
+          case 5:
+            randomGods = [godOne, godTwo, godThree];
+            break;
+          default:
+            randomGods = [godOne, godTwo];
+            break;
         }
-      } while (foundGod);
-    } else {
-      god = data[Math.floor(Math.random() * num)] as unknown as Data;
-    }
 
-    return god;
-  }
+        setMultipleChoice(randomGods);
 
-  function requestNFT() {
-    setCountdown(defaultCount);
-    if (gameStatus !== "inProgress") return;
+        // Get a distinct right answer, ensuring it's not already present in multiple choice
+        let selectedGod: Data;
+        do {
+          selectedGod = await randomDeGod();
+        } while (randomGods.some((god) => god.name === selectedGod.name));
 
-    setShouldStartCountdown(false);
-    if (
-      (currentRound < 10 && gameMode === gameModes.TIMER) ||
-      gameMode === gameModes.STREAK
-    ) {
-      setCurrentRound((prevRound) => prevRound + 1);
-    } else if (gameMode === gameModes.TIMER) {
-      setGameStatus("finished");
-      setCountdown(0);
-      toast.success("Game finished!");
-      setShouldStartCountdown(false);
+        // Shuffle randomGods and replace one random element with the right answer
+        const selectedIndex = Math.floor(Math.random() * randomGods.length);
+        randomGods[selectedIndex] = selectedGod;
+
+        setMultipleChoice(randomGods); // Update the multiple choice with shuffled options
+        setNftData(selectedGod); // Set the correct answer
+      })().catch(console.error);
+    }, [currentRound, defaultCount, randomDeGod]);
+
+    useEffect(() => {
+      if (restart) requestNFT();
+      setRestart(false);
+    }, [restart, requestNFT]);
+
+    useEffect(() => {
+      setCountdown(defaultCount);
+    }, [imageLoaded, defaultCount]);
+
+    const handleGuess = (username: string) => {
+      console.log("handle guess", currentRound, gameMode);
+      if (currentRound > 10 && gameMode === gameModes.TIMER) {
+        setGameStatus("finished");
+        setCountdown(0);
+        setShouldStartCountdown(false);
+        setCurrentRound(0);
+
+        return;
+      }
+      if (!nftData) return;
+
+      setRoundInProgress(true); // Start a round
+
+      const nftAnswer = {
+        ...nftData,
+        correct: false,
+      };
+
+      if (username === nftData.name) {
+        nftAnswer.correct = true;
+        toast.success(`Correct - ${nftData.name}`, {
+          autoClose: 500,
+        });
+
+        setAnswers((prev) => ({ ...prev, correct: prev.correct + 1 }));
+      } else {
+        toast.error(nftData.name, {
+          autoClose: 500,
+        });
+
+        setAnswers((prev) => ({ ...prev, incorrect: prev.incorrect + 1 }));
+
+        setLastIncorrect(nftData.image);
+
+        // If game mode is STREAK and the answer is incorrect, finish the game
+        if (gameMode === gameModes.STREAK) {
+          setGameStatus("finished");
+          setCountdown(0);
+          toast.success("Game finished!");
+          setNftData(undefined);
+          return;
+        }
+      }
+      setLastAnswers((prev) => [...prev, nftAnswer]);
       setRoundInProgress(false);
+      setShouldStartCountdown(false);
+      setCurrentRound((prev) => prev + 1);
+      setCountdown(0);
+      setImageLoaded(false);
+      /// await new Promise((resolve) => setTimeout(resolve, 500)); // Wait 0.5 seconds before requesting a new NFT
+      // requestNFT();
+    };
 
-      //set nftData.data undefined
-
-      setNftData(undefined);
+    function setDifficulty(diff: number) {
+      setDefaultCount(diff);
     }
-  }
 
-  function setDifficulty(diff: number) {
-    setDefaultCount(diff);
-  }
 
-  // const NFT = api.nft.getNFT.useQuery({
-  //   address: contract,
-  //   tokenId,
-  //   isMatic: matic === "true",
-  // });
-
-  // //use effect to set body gradient color
-  // useEffect(() => {
-  //   const body = document.querySelector("body");
-  //   if (body) {
-  //     body.classList.add("bg-gradient-to-b", "from-[#313131]", "to-[#000]");
-  //     body.style.backgroundImage = "none";
-  //     body.style.backgroundColor = "#000";
-  //   }
-  // }, []);
-
-  // useEffect(() => {
-  //   //redirect to home page
-  //   const redirect = () => {
-  //     window.location.href = "/";
-  //   };
-  //   redirect();
-  // }, []);
 
   return (
     <div>
@@ -524,7 +460,8 @@ const ImagePage: React.FC<ImagePageProps> = ({ imageUrl }) => {
           {!nftData?.image ? (
             <ImageComponent imageId={imageId} />
           ) : (
-            <img
+              <img
+              onLoad={() => setImageLoaded(true)}
               style={{ height: "400px", width: "400px" }}
               alt="NFT"
               src={nftData?.image}
@@ -614,7 +551,8 @@ const ImagePage: React.FC<ImagePageProps> = ({ imageUrl }) => {
                       key={nft.name}
                       className="mx-3 my-1  rounded bg-gray-600 p-1 text-center font-bold text-white shadow-xl transition duration-500 hover:scale-110 hover:bg-gray-700"
                       onClick={() => {
-                        handleGuess(nft.name).catch(console.error);
+                        if(imageLoaded && countdown > 0)
+                          handleGuess(nft.name);
                       }}
                     >
                       {nft.name}

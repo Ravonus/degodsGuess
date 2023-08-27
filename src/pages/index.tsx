@@ -1,4 +1,4 @@
-import { useState, useEffect, use } from "react";
+import { useState, useEffect, use, useCallback } from "react";
 import Head from "next/head";
 
 import { useRouter } from "next/router";
@@ -53,6 +53,8 @@ export default function Home() {
   const [open, setOpen] = useState<boolean>(false);
   const [multipleChoice, setMultipleChoice] = useState<Data[]>([]); // array of 4 random nfts to choose from
 
+  const [imageLoaded, setImageLoaded] = useState(false);
+
   const [azukiVotes, setAzukiVotes] = useState(0);
   const [elementalVotes, setElementalVotes] = useState(0);
 
@@ -74,6 +76,90 @@ export default function Home() {
   //see if ?begin is in the url
 
   const twitch = router.query.twitch ? router.query.twitch : false;
+
+  const requestNFT = useCallback(() => {
+    //setCountdown(defaultCount);
+
+    // if (roundInProgress) return;
+    // setRoundInProgress(true);
+    setImageLoaded(false);
+    if (gameStatus !== "inProgress") return;
+
+    setShouldStartCountdown(false);
+    if (
+      (currentRound < 10 && gameMode === gameModes.TIMER) ||
+      gameMode === gameModes.STREAK
+    ) {
+      setCurrentRound((prevRound) => prevRound + 1);
+    } else if (gameMode === gameModes.TIMER) {
+      setGameStatus("finished");
+      setCountdown(0);
+      toast.success("Game finished!");
+      setShouldStartCountdown(false);
+      setRoundInProgress(false);
+
+      //set nftData.data undefined
+
+      setNftData(undefined);
+    }
+  }, [
+    currentRound,
+    gameMode,
+    gameStatus,
+    roundInProgress,
+    twitch,
+    defaultCount,
+    lastIncorrect,
+    lastAnswers,
+    multipleChoice,
+    answers,
+    userVotes,
+    azukiVotes,
+    elementalVotes,
+    azukiWidth,
+    elementalWidth,
+    imageLoaded,
+    nftData,
+  ]);
+  // async function randomDeGod(noCheck = false): Promise<Data> {
+  const randomDeGod = useCallback(
+    async (noCheck = false): Promise<Data> => {
+      let count: number | undefined;
+
+      switch (defaultCount) {
+        case 3:
+          count = undefined;
+          break;
+        case 5:
+          count = 150;
+          break;
+        default:
+          count = 75;
+          break;
+      }
+
+      const num = count !== undefined ? Number(count) : data.length;
+
+      let god: Data;
+      if (!noCheck) {
+        let foundGod: boolean;
+        do {
+          god = data[Math.floor(Math.random() * num)] as unknown as Data;
+          foundGod = lastAnswers.some((answer) => answer.name === god.name);
+
+          if (foundGod) {
+            await new Promise((resolve) => setTimeout(resolve, 0)); // wait for next event loop
+          }
+        } while (foundGod);
+      } else {
+        god = data[Math.floor(Math.random() * num)] as unknown as Data;
+      }
+
+      return god;
+    },
+
+    [defaultCount, lastAnswers]
+  );
 
   useEffect(() => {
     const totalVotes = azukiVotes + elementalVotes;
@@ -98,108 +184,53 @@ export default function Home() {
       setDefaultCount(20);
     }
     setShouldStartCountdown(true);
-
-    // Connect to the Socket.IO server
-    // setSocket(
-    //   io(process.env.NEXT_PUBLIC_SOCKET as string, {
-    //     query: { twitch: twitch },
-    //   })
-    // );
-
-    // Handle the 'chat message' event
-
-    // Disconnect when the component unmounts
-    // return () => {
-    //   socket?.disconnect();
-    // };
   }, [twitch]);
 
   useEffect(() => {
     //first remvoe listener
 
     if (gameStatus !== "inProgress") return;
-
-    //socket?.off(twitch as string);
-
-    // socket?.on(twitch as string, (msg: { user: string; isAzuki: boolean }) => {
-    //   //if user has already voted change it, if not add it
-    //   //we need to check if userVotes[msg.user] exists (Not if its true or false)
-
-    //   if (userVotes[msg.user] !== undefined) {
-    //     if (userVotes[msg.user] === msg.isAzuki) {
-    //       //if they voted the same, do nothing
-    //       return;
-    //     } else {
-    //       //if they voted different, change it
-    //       setUserVotes((prev) => ({ ...prev, [msg.user]: msg.isAzuki }));
-    //       if (msg.isAzuki) {
-    //         setAzukiVotes((prev) => prev + 1);
-    //         setElementalVotes((prev) => prev - 1);
-    //       } else {
-    //         setAzukiVotes((prev) => prev - 1);
-    //         setElementalVotes((prev) => prev + 1);
-    //       }
-    //     }
-    //   } else {
-    //     //if they haven't voted, add it
-    //     setUserVotes((prev) => ({ ...prev, [msg.user]: msg.isAzuki }));
-    //     if (msg.isAzuki) setAzukiVotes((prev) => prev + 1);
-    //     else setElementalVotes((prev) => prev + 1);
-    //   }
-
-    //   toast.success(
-    //     `${msg.user} voted for ${msg.isAzuki ? "Azuki" : "Elemental"}`
-    //   );
-    // });
   }, [userVotes, gameStatus]);
+
+  useEffect(() => {
+    let countdownTimer: NodeJS.Timeout;
+    if (
+      gameStatus === "inProgress" &&
+      !twitch &&
+      gameMode !== gameModes.STREAK
+    ) {
+      countdownTimer = setInterval(() => {
+        setRoundInProgress(true);
+        setCountdown((prevCountdown) => {
+          if (prevCountdown === 0) {
+            clearInterval(countdownTimer);
+            return 0;
+          }
+          return prevCountdown - 1;
+        });
+      }, 1000);
+    }
+    return () => {
+      clearInterval(countdownTimer);
+    };
+  }, [gameMode, gameStatus, twitch]);
 
   useEffect(() => {
     if (gameStatus !== "inProgress") return;
 
-    if (gameMode === gameModes.STREAK && !twitch) return;
-
-    let countdownTimer: NodeJS.Timeout;
-
-    if (countdown > 0 && shouldStartCountdown) {
-      countdownTimer = setTimeout(() => {
-        setCountdown((prevCountdown) => prevCountdown - 1);
-      }, 1000);
-    } else if (countdown < 1 && shouldStartCountdown && !roundInProgress) {
-      // Timeout expired, request a new NFT
-
+    if (countdown < 1 && shouldStartCountdown && roundInProgress) {
       setAnswers((prev) => ({ ...prev, incorrect: prev.incorrect + 1 }));
-
+      setShouldStartCountdown(false);
+      setRoundInProgress(false);
       requestNFT();
-      setShouldStartCountdown(false); // Prevent the countdown from starting automatically
     }
-
-    return () => {
-      clearTimeout(countdownTimer);
-    };
   }, [
-    twitch,
+    gameStatus,
     countdown,
     shouldStartCountdown,
-    defaultCount,
-    gameMode,
     roundInProgress,
+    requestNFT,
   ]);
-
-  // if (nft.isIdle && !nftData) {
-  //   nft
-  //     .mutateAsync()
-  //     .then((data) => {
-  //       setNftData(data);
-
-  //       setTimeout(() => {
-  //         // Only 5 seconds to guess
-  //         //   setCountdown(defaultCount);
-  //       }, 5000);
-  //     })
-  //     .catch((err) => {
-  //       console.log(err);
-  //     });
-  // }
 
   useEffect(() => {
     if (currentRound === 0) {
@@ -243,19 +274,19 @@ export default function Home() {
       setMultipleChoice(randomGods); // Update the multiple choice with shuffled options
       setNftData(selectedGod); // Set the correct answer
     })().catch(console.error);
-  }, [currentRound]);
+  }, [currentRound, defaultCount, randomDeGod]);
 
   useEffect(() => {
     if (restart) requestNFT();
     setRestart(false);
-  }, [restart]);
+  }, [restart, requestNFT]);
 
-  // useEffect(() => {
-  //   if (!nftData) return;
-  //   setLastAnswers((prev) => [...prev, nftData]);
-  // }, [nftData]);
+  useEffect(() => {
+    setCountdown(defaultCount);
+  }, [imageLoaded, defaultCount]);
 
-  const handleGuess = async (username: string) => {
+  const handleGuess = (username: string) => {
+    console.log("handle guess", currentRound, gameMode);
     if (currentRound > 10 && gameMode === gameModes.TIMER) {
       setGameStatus("finished");
       setCountdown(0);
@@ -265,33 +296,14 @@ export default function Home() {
       return;
     }
     if (!nftData) return;
-    if (roundInProgress) return; // Prevent multiple guesses in the same round
-    setRoundInProgress(true); // Start a round
-    // if (nftData.contract === collection) {
-    //   toast.success("Correct!", {
-    //     autoClose: 500,
-    //   });
-    //   setAnswers((prev) => ({ ...prev, correct: prev.correct + 1 }));
-    // } else {
-    //   toast.error("Nope!", {
-    //     autoClose: 500,
-    //   });
-    //   setAnswers((prev) => ({ ...prev, incorrect: prev.incorrect + 1 }));
-    //   setLastIncorrect(nftData.image);
 
-    //   // If game mode is STREAK and the answer is incorrect, finish the game
-    //   if (gameMode === gameModes.STREAK) {
-    //     setGameStatus("finished");
-    //     setCountdown(0);
-    //     toast.success("Game finished!");
-    //     setNftData(undefined);
-    //     return;
-    //   }
-    // }
+    setRoundInProgress(true); // Start a round
+
     const nftAnswer = {
       ...nftData,
       correct: false,
     };
+
     if (username === nftData.name) {
       nftAnswer.correct = true;
       toast.success(`Correct - ${nftData.name}`, {
@@ -303,7 +315,9 @@ export default function Home() {
       toast.error(nftData.name, {
         autoClose: 500,
       });
+
       setAnswers((prev) => ({ ...prev, incorrect: prev.incorrect + 1 }));
+
       setLastIncorrect(nftData.image);
 
       // If game mode is STREAK and the answer is incorrect, finish the game
@@ -315,70 +329,15 @@ export default function Home() {
         return;
       }
     }
-
     setLastAnswers((prev) => [...prev, nftAnswer]);
     setRoundInProgress(false);
-    await new Promise((resolve) => setTimeout(resolve, 500)); // Wait 0.5 seconds before requesting a new NFT
-    requestNFT();
-  };
-
-  async function randomDeGod(noCheck = false): Promise<Data> {
-    let count: number | undefined;
-
-    switch (defaultCount) {
-      case 3:
-        count = undefined;
-        break;
-      case 5:
-        count = 150;
-        break;
-      default:
-        count = 75;
-        break;
-    }
-
-    const num = count !== undefined ? Number(count) : data.length;
-
-    let god: Data;
-    if (!noCheck) {
-      let foundGod: boolean;
-      do {
-        god = data[Math.floor(Math.random() * num)] as unknown as Data;
-        foundGod = lastAnswers.some((answer) => answer.name === god.name);
-
-        if (foundGod) {
-          await new Promise((resolve) => setTimeout(resolve, 0)); // wait for next event loop
-        }
-      } while (foundGod);
-    } else {
-      god = data[Math.floor(Math.random() * num)] as unknown as Data;
-    }
-
-    return god;
-  }
-
-  function requestNFT() {
-    setCountdown(defaultCount);
-    if (gameStatus !== "inProgress") return;
-
     setShouldStartCountdown(false);
-    if (
-      (currentRound < 10 && gameMode === gameModes.TIMER) ||
-      gameMode === gameModes.STREAK
-    ) {
-      setCurrentRound((prevRound) => prevRound + 1);
-    } else if (gameMode === gameModes.TIMER) {
-      setGameStatus("finished");
-      setCountdown(0);
-      toast.success("Game finished!");
-      setShouldStartCountdown(false);
-      setRoundInProgress(false);
-
-      //set nftData.data undefined
-
-      setNftData(undefined);
-    }
-  }
+    setCurrentRound((prev) => prev + 1);
+    setCountdown(0);
+    setImageLoaded(false);
+    /// await new Promise((resolve) => setTimeout(resolve, 500)); // Wait 0.5 seconds before requesting a new NFT
+    // requestNFT();
+  };
 
   function setDifficulty(diff: number) {
     setDefaultCount(diff);
@@ -525,6 +484,7 @@ export default function Home() {
             </>
           ) : (
             <img
+              onLoad={() => setImageLoaded(true)}
               style={{ height: "400px", width: "400px" }}
               alt="NFT"
               src={nftData?.image}
@@ -614,7 +574,7 @@ export default function Home() {
                       key={nft.name}
                       className="mx-3 my-1  rounded bg-gray-600 p-1 text-center font-bold text-white shadow-xl transition duration-500 hover:scale-110 hover:bg-gray-700"
                       onClick={() => {
-                        handleGuess(nft.name).catch(console.error);
+                        if (imageLoaded && countdown > 0) handleGuess(nft.name);
                       }}
                     >
                       {nft.name}
