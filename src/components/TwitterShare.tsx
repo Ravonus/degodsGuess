@@ -104,13 +104,13 @@ const TwitterShare: FC<TwitterShareProps> = ({
         : defaultCount === 5
         ? "Medium"
         : "Hard";
-    let scoreText = "";
+    let scoreText = "\nHow well Do you know your fellow X Apes?\n\n";
 
     if (gameMode === gameModes.STREAK) {
-      scoreText = `I scored a streak of ${correct} Ape influencers in PFPGuessr`;
+      scoreText += `I scored a streak of ${correct} Ape influencers in PFPGuessr`;
     }
     if (gameMode === gameModes.TIMER) {
-      scoreText = `I guessed ${correct}/10 CT Apes in PFPGuessr on ${diff} difficulty!`;
+      scoreText += `I guessed ${correct}/10 CT Apes in PFPGuessr on ${diff}!`;
     }
 
     //find one incorrect answer
@@ -119,7 +119,7 @@ const TwitterShare: FC<TwitterShareProps> = ({
       if (found) return;
       if (answer.correct === false) {
         found = true;
-        scoreText += `\n\n I couldn't even get @${answer.username} correct. `;
+        scoreText += `\n\n @${answer.username} had me stumped.`;
         return;
       }
     });
