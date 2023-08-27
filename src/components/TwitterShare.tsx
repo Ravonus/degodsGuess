@@ -107,7 +107,7 @@ const TwitterShare: FC<TwitterShareProps> = ({
     let scoreText = "";
 
     if (gameMode === gameModes.STREAK) {
-      scoreText = `I scored a streak of ${correct} Apes influencers in PFPGuessr`;
+      scoreText = `I scored a streak of ${correct} Ape influencers in PFPGuessr`;
     }
     if (gameMode === gameModes.TIMER) {
       scoreText = `I guessed ${correct}/10 CT Apes in PFPGuessr on ${diff} difficulty!`;
