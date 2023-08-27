@@ -508,7 +508,10 @@ export default function Home() {
           property="og:description"
           content="Can you guess the community members."
         />
-        <meta property="og:image" content="https://pfpguessr.com/pfp2.png" />
+        <meta
+          property="og:image"
+          content="https://apes.pfpguessr.com/pfp3.png"
+        />
 
         <meta property="twitter:card" content="summary_large_image" />
         <meta property="twitter:url" content="https://pfpguessr.com/" />
@@ -519,7 +522,7 @@ export default function Home() {
         />
         <meta
           property="twitter:image"
-          content="https://pfpguessr.com/pfp2.png"
+          content="https://apes.pfpguessr.com/pfp3.png"
         />
 
         <meta name="twitter:card" content="summary_large_image" />
@@ -529,7 +532,10 @@ export default function Home() {
           name="twitter:description"
           content="Can you guess the community members."
         />
-        <meta name="twitter:image" content="https://pfpguessr.com/pfp2.png" />
+        <meta
+          name="twitter:image"
+          content="https://apes.pfpguessr.com/pfp3.png"
+        />
       </Head>
       <a
         id="twitterShareLink"
@@ -557,7 +563,7 @@ export default function Home() {
         <div className="container flex flex-col items-center justify-center gap-12 px-4 py-2 ">
           <div className="absolute right-0 top-0 m-8 flex cursor-pointer flex-row justify-end gap-4">
             <CogIcon
-              className="h-12 w-12 text-white hover:text-gray-400 transition duration-500 ease-in-out transform hover:scale-110"
+              className="h-12 w-12 transform text-white transition duration-500 ease-in-out hover:scale-110 hover:text-gray-400"
               onClick={() => setOpen(true)}
             />
           </div>
@@ -629,7 +635,7 @@ export default function Home() {
             <img
               alt="NFT"
               src={nftData?.image}
-              className="rounded border-2 border-gray-500 shadow-xl transition duration-500 hover:scale-110 hover:border-gray-600 rounded-full"
+              className="rounded rounded-full border-2 border-gray-500 shadow-xl transition duration-500 hover:scale-110 hover:border-gray-600"
             />
           )}
 

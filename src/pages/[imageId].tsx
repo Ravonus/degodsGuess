@@ -495,7 +495,7 @@ const ImagePage: React.FC<ImagePageProps> = ({ imageUrl }) => {
         <div className="container flex flex-col items-center justify-center gap-12 px-4 py-2 ">
           <div className="absolute right-0 top-0 m-8 flex cursor-pointer flex-row justify-end gap-4">
             <CogIcon
-              className="h-8 w-8 text-white"
+              className="h-12 w-12 transform text-white transition duration-500 ease-in-out hover:scale-110 hover:text-gray-400"
               onClick={() => setOpen(true)}
             />
           </div>
@@ -562,7 +562,7 @@ const ImagePage: React.FC<ImagePageProps> = ({ imageUrl }) => {
               style={{ height: "400px", width: "400px" }}
               alt="NFT"
               src={nftData?.image}
-              className="rounded border-2 border-gray-500 shadow-xl transition duration-500 hover:scale-110 hover:border-gray-600 rounded-full"
+              className="rounded rounded-full border-2 border-gray-500 shadow-xl transition duration-500 hover:scale-110 hover:border-gray-600"
             />
           )}
 
