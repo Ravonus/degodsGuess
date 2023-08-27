@@ -419,7 +419,7 @@ const ImagePage: React.FC<ImagePageProps> = ({ imageUrl }) => {
       <Head>
         <title>PFPGuessr</title>
         <meta name="description" content="Can you guess popular CT PFPs." />
-        <meta name="mobile-web-app-capable" content="yes"/>
+        <meta name="mobile-web-app-capable" content="yes" />
 
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:image" content={imageUrl} />
@@ -461,7 +461,7 @@ const ImagePage: React.FC<ImagePageProps> = ({ imageUrl }) => {
         <div className="container flex flex-col items-center justify-center gap-12 px-4 py-2 ">
           <div className="absolute right-0 top-0 m-8 flex cursor-pointer flex-row justify-end gap-4">
             <CogIcon
-              className="h-6 w-6 text-white"
+              className="h-12 w-12 transform text-white transition duration-500 ease-in-out hover:scale-110 hover:text-gray-400"
               onClick={() => setOpen(true)}
             />
           </div>

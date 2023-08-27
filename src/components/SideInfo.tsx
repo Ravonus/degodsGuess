@@ -12,7 +12,7 @@ interface SideInfoProps {
   setDifficulty: (difficulty: number) => void;
 }
 
-const communties = ["DeGods"];
+const communties = ["Bored Apes", "DeGods"];
 
 const SideInfo: FC<SideInfoProps> = ({
   gameStatus,
@@ -51,8 +51,9 @@ const SideInfo: FC<SideInfoProps> = ({
             className="m-1 block w-36 cursor-pointer rounded bg-gray-600 px-4 py-2 font-bold text-white shadow-xl transition duration-500 hover:bg-gray-700"
             onChange={(select) => {
               const community = select.target;
-              const communityName = community.value.toLowerCase();
+              let communityName = community.value.toLowerCase();
               if (communityName !== currentCommunity?.toLowerCase()) {
+                if (communityName === "bored apes") communityName = "apes";
                 window.location.href = `https://${communityName.toLowerCase()}.pfpguessr.com`;
               }
             }}
