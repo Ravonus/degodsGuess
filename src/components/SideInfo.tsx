@@ -10,9 +10,13 @@ interface SideInfoProps {
   gameStatus: string;
   setGameMode: (gameMode: string) => void;
   setDifficulty: (difficulty: number) => void;
+  mayc: boolean;
+  bayc: boolean;
+  setMayc: (mayc: boolean) => void;
+  setBayc: (bayc: boolean) => void;
 }
 
-const communties = ["DeGods"];
+const communties = ["Bored Apes", "DeGods"];
 
 const SideInfo: FC<SideInfoProps> = ({
   gameStatus,
@@ -20,6 +24,10 @@ const SideInfo: FC<SideInfoProps> = ({
   setGameMode,
   twitch,
   setDifficulty,
+  mayc,
+  bayc,
+  setMayc,
+  setBayc,
 }) => {
   const currentPage = window.location.pathname;
   const isHome = currentPage === "/";
@@ -39,20 +47,20 @@ const SideInfo: FC<SideInfoProps> = ({
         <div className=" mt-6 block px-4 sm:px-6">
           {/* button to go to influencer mode (/) */}
 
+          <Link href="https://pfpguessr.com">
+            <button className="m-1 block w-36 cursor-pointer rounded bg-gray-600 px-4 py-2 font-bold text-white shadow-xl transition duration-500 hover:bg-gray-700">
+              Influencer Guess
+            </button>
+          </Link>
 
-            <Link href="https://pfpguessr.com">
-              <button className="m-1 block w-36 cursor-pointer rounded bg-gray-600 px-4 py-2 font-bold text-white shadow-xl transition duration-500 hover:bg-gray-700">
-                Influencer Guess
-              </button>
-            </Link>
-          
           {/* //loop through communities and create a dropdown to go to each one */}
           <select
             className="m-1 block w-36 cursor-pointer rounded bg-gray-600 px-4 py-2 font-bold text-white shadow-xl transition duration-500 hover:bg-gray-700"
             onChange={(select) => {
               const community = select.target;
-              const communityName = community.value.toLowerCase();
+              let communityName = community.value.toLowerCase();
               if (communityName !== currentCommunity?.toLowerCase()) {
+                if (communityName === "bored apes") communityName = "apes";
                 window.location.href = `https://${communityName}.pfpguessr.com/`;
               }
             }}
@@ -77,20 +85,40 @@ const SideInfo: FC<SideInfoProps> = ({
 
           {(gameStatus === "notStarted" || gameStatus === "finished") &&
             !twitch && (
-            <select
-                defaultChecked value={diffculty}
-                className="m-1 block w-36 cursor-pointer rounded bg-gray-600 px-4 py-2 font-bold text-white shadow-xl transition duration-500 hover:bg-gray-700"
-                onChange={(e) => setDifficulty(parseInt(e.target.value))}
-              >
               <>
-                  <option value="30">Noob</option>
-                  <option value="8">Easy</option>
-                  <option defaultChecked value="5">
-                    Medium
-                  </option>
-                  <option value="3">Hard</option>
-                </>
-              </select>
+                <select
+                  defaultChecked
+                  value={diffculty}
+                  className="m-1 block w-36 cursor-pointer rounded bg-gray-600 px-4 py-2 font-bold text-white shadow-xl transition duration-500 hover:bg-gray-700"
+                  onChange={(e) => setDifficulty(parseInt(e.target.value))}
+                >
+                  <>
+                    <option value="30">Noob</option>
+                    <option value="8">Easy</option>
+                    <option defaultChecked value="5">
+                      Medium
+                    </option>
+                    <option value="3">Hard</option>
+                  </>
+                </select>
+                <div className="flex flex-row justify-center m-1">
+                  <input
+                    type="checkbox"
+                    className="m-1 cursor-pointer rounded bg-gray-600 px-4 py-2 font-bold text-white shadow-xl transition duration-500 hover:bg-gray-700 m-1"
+                    checked={mayc}
+                    onChange={() => setMayc(!mayc)}
+                  />
+                  <label className="text-white m-1">MAYC</label>
+
+                  <input
+                    type="checkbox"
+                    className="m-1 cursor-pointer rounded bg-gray-600 px-4 py-2 font-bold text-white shadow-xl transition duration-500 hover:bg-gray-700 m-1"
+                    checked={bayc}
+                    onChange={() => setBayc(!bayc)}
+                  />
+                  <label className="text-white m-1">BAYC</label>
+                </div>
+              </>
             )}
         </div>
       </div>

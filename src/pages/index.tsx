@@ -6,7 +6,8 @@ import { ToastContainer, toast } from "react-toastify";
 import html2canvas from "html2canvas";
 import "react-toastify/dist/ReactToastify.css";
 
-import data from "~/../public/data_degods.json";
+import dataM from "~/../public/data_mayc.json";
+import dataB from "~/../public/data_bayc.json";
 import Sidebar from "~/components/Sidebar";
 
 //import gear icon
@@ -30,9 +31,9 @@ export interface Data {
   image: string;
   username: string;
   rank: number;
-  tokenID: number;
+  tokenID: number | string;
   name: string;
-  correct: boolean;
+  correct?: boolean;
 }
 
 
@@ -51,6 +52,9 @@ export default function Home() {
   const [gameMode, setGameMode] = useState(gameModes.TIMER); // new state to set game mode, default is TIMER
   const [open, setOpen] = useState<boolean>(false);
   const [multipleChoice, setMultipleChoice] = useState<Data[]>([]); // array of 4 random nfts to choose from
+
+  const [bayc, setBayc] = useState(true);
+  const [mayc, setMayc] = useState(true);
 
   const [azukiVotes, setAzukiVotes] = useState(0);
   const [elementalVotes, setElementalVotes] = useState(0);
@@ -367,6 +371,38 @@ export default function Home() {
         break;
     }
 
+    let data:Data[] = [];
+
+    if (bayc && mayc) {
+      //we gotta combine them one at a time so the ranking of each collection is still orders so loop through each one picking a new one from each > until one is empty adn then add the rest of the other one
+
+      let i = 0;
+      let j = 0;
+
+      while (i < dataB.length && j < dataM.length) {
+        data.push(dataB[i] as unknown as Data);
+        data.push(dataM[j] as unknown as Data);
+        i++;
+        j++;
+      }
+
+      while (i < dataB.length) {
+        data.push(dataB[i] as unknown as Data);
+        i++;
+      }
+
+      while (j < dataM.length) {
+        data.push(dataM[j] as unknown as Data);
+        j++;
+      }
+
+
+    } else if (bayc) {
+      data = [...dataB];
+    } else if (mayc) {
+      data = [...dataM];
+    }
+
     const num = count !== undefined ? Number(count) : data.length;
 
     let god: Data;
@@ -459,7 +495,7 @@ export default function Home() {
       <Head>
         <link rel="icon" href="/favicon.ico" />
         <title>DeCypher</title>
-        <meta name="title" content="DeGods" />
+        <meta name="title" content="PFPGuessr Ape Edition" />
         <meta
           name="description"
           content="Can you guess the community members."
@@ -476,7 +512,7 @@ export default function Home() {
 
         <meta property="twitter:card" content="summary_large_image" />
         <meta property="twitter:url" content="https://pfpguessr.com/" />
-        <meta property="twitter:title" content="DeGods" />
+        <meta property="twitter:title" content="PfpGuessr" />
         <meta
           property="twitter:description"
           content="Can you guess the community members."
@@ -503,6 +539,10 @@ export default function Home() {
       ></a>
       <Sidebar setOpen={setOpen} open={open}>
         <SideInfo
+          setMayc={setMayc}
+          setBayc={setBayc}
+          mayc={mayc}
+          bayc={bayc}
           diffculty={defaultCount}
           gameStatus={gameStatus}
           setDifficulty={setDifficulty}
@@ -517,7 +557,7 @@ export default function Home() {
         <div className="container flex flex-col items-center justify-center gap-12 px-4 py-2 ">
           <div className="absolute right-0 top-0 m-8 flex cursor-pointer flex-row justify-end gap-4">
             <CogIcon
-              className="h-6 w-6 text-white"
+              className="h-12 w-12 text-white hover:text-gray-400 transition duration-500 ease-in-out transform hover:scale-110"
               onClick={() => setOpen(true)}
             />
           </div>
@@ -589,7 +629,7 @@ export default function Home() {
             <img
               alt="NFT"
               src={nftData?.image}
-              className="rounded border-2 border-gray-500 shadow-xl transition duration-500 hover:scale-110 hover:border-gray-600"
+              className="rounded border-2 border-gray-500 shadow-xl transition duration-500 hover:scale-110 hover:border-gray-600 rounded-full"
             />
           )}
 
@@ -718,7 +758,7 @@ export default function Home() {
                     src={nft?.image}
                     alt="NFT"
                     key={`${i}-${nft.name}`}
-                    className={`m-2 h-36 cursor-pointer rounded border-2 font-bold text-white shadow-xl transition duration-500 hover:scale-110 ${
+                    className={`m-2 h-36 cursor-pointer rounded-lg border-2 font-bold text-white shadow-xl transition duration-500 hover:scale-110 ${
                       nft?.correct ? "border-green-500" : "border-red-500"
                     }`}
                     onClick={() => {

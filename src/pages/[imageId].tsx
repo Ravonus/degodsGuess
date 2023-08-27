@@ -4,7 +4,9 @@ import Head from "next/head";
 import { ReactElement, useEffect, useState } from "react";
 import Footer from "~/components/Footer";
 
-import data from "~/../public/data.json";
+import dataM from "~/../public/data_mayc.json";
+import dataB from "~/../public/data_bayc.json";
+
 import { type Data, gameModes, type UserVotes } from "~/pages";
 
 import { ToastContainer, toast } from "react-toastify";
@@ -14,8 +16,8 @@ import { useRouter } from "next/router";
 import TwitterShare from "~/components/TwitterShare";
 import axios from "axios";
 import ImageComponent from "~/components/ImageComponent";
-import Sidebar from '~/components/Sidebar';
-import SideInfo from '~/components/SideInfo';
+import Sidebar from "~/components/Sidebar";
+import SideInfo from "~/components/SideInfo";
 
 interface ImagePageProps {
   imageUrl: string;
@@ -68,6 +70,8 @@ const ImagePage: React.FC<ImagePageProps> = ({ imageUrl }) => {
 
   const [azukiWidth, setAzukiWidth] = useState(100);
   const [elementalWidth, setElementalWidth] = useState(100);
+  const [bayc, setBayc] = useState(true);
+  const [mayc, setMayc] = useState(true);
 
   //get id of image (url param)
 
@@ -341,6 +345,36 @@ const ImagePage: React.FC<ImagePageProps> = ({ imageUrl }) => {
         break;
     }
 
+    let data: Data[] = [];
+
+    if (bayc && mayc) {
+      //we gotta combine them one at a time so the ranking of each collection is still orders so loop through each one picking a new one from each > until one is empty adn then add the rest of the other one
+
+      let i = 0;
+      let j = 0;
+
+      while (i < dataB.length && j < dataM.length) {
+        data.push(dataB[i] as unknown as Data);
+        data.push(dataM[j] as unknown as Data);
+        i++;
+        j++;
+      }
+
+      while (i < dataB.length) {
+        data.push(dataB[i] as unknown as Data);
+        i++;
+      }
+
+      while (j < dataM.length) {
+        data.push(dataM[j] as unknown as Data);
+        j++;
+      }
+    } else if (bayc) {
+      data = [...dataB];
+    } else if (mayc) {
+      data = [...dataM];
+    }
+
     const num = count !== undefined ? Number(count) : data.length;
 
     let god: Data;
@@ -420,14 +454,14 @@ const ImagePage: React.FC<ImagePageProps> = ({ imageUrl }) => {
 
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:image" content={imageUrl} />
-        <meta name="twitter:url" content="https://degods.pfpguessr.com" />
+        <meta name="twitter:url" content="https://pfpguessr.com" />
         <meta name="twitter:title" content={`Can you guess popular CT PFPs.`} />
         <meta
           name="twitter:description"
           content={`A fun game to guess Crypto Twitter PFPs.`}
         />
         <meta property="og:image" content={`${imageUrl}.png`} />
-        <meta property="og:url" content="https://degods.pfpguessr.com" />
+        <meta property="og:url" content="https://pfpguessr.com" />
         <meta property="og:title" content={`Can you guess popular CT PFPs.`} />
         <meta
           property="og:description"
@@ -444,6 +478,10 @@ const ImagePage: React.FC<ImagePageProps> = ({ imageUrl }) => {
       ></a>
       <Sidebar setOpen={setOpen} open={open}>
         <SideInfo
+          mayc={mayc}
+          bayc={bayc}
+          setMayc={setMayc}
+          setBayc={setBayc}
           diffculty={defaultCount}
           gameStatus={gameStatus}
           setDifficulty={setDifficulty}
@@ -457,7 +495,7 @@ const ImagePage: React.FC<ImagePageProps> = ({ imageUrl }) => {
         <div className="container flex flex-col items-center justify-center gap-12 px-4 py-2 ">
           <div className="absolute right-0 top-0 m-8 flex cursor-pointer flex-row justify-end gap-4">
             <CogIcon
-              className="h-6 w-6 text-white"
+              className="h-8 w-8 text-white"
               onClick={() => setOpen(true)}
             />
           </div>
@@ -524,7 +562,7 @@ const ImagePage: React.FC<ImagePageProps> = ({ imageUrl }) => {
               style={{ height: "400px", width: "400px" }}
               alt="NFT"
               src={nftData?.image}
-              className="rounded border-2 border-gray-500 shadow-xl transition duration-500 hover:scale-110 hover:border-gray-600"
+              className="rounded border-2 border-gray-500 shadow-xl transition duration-500 hover:scale-110 hover:border-gray-600 rounded-full"
             />
           )}
 
@@ -653,7 +691,7 @@ const ImagePage: React.FC<ImagePageProps> = ({ imageUrl }) => {
                     src={nft?.image}
                     alt="NFT"
                     key={`${i}-${nft.name}`}
-                    className={`m-2 h-36 cursor-pointer rounded border-2 font-bold text-white shadow-xl transition duration-500 hover:scale-110 ${
+                    className={`m-2 h-36 cursor-pointer rounded-lg border-2 font-bold text-white shadow-xl transition duration-500 hover:scale-110 ${
                       nft?.correct ? "border-green-500" : "border-red-500"
                     }`}
                     onClick={() => {
